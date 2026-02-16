@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { initializeFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getFunctions } from "firebase/functions";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { onIdTokenChanged } from "firebase/auth";
 
@@ -22,6 +23,7 @@ const db = initializeFirestore(app, {
 });
 export { db };
 export const storage = getStorage(app); // Correctly initialized
+export const functions = getFunctions(app);
 
 
 
@@ -55,6 +57,7 @@ export const FirebaseProvider = ({ children }) => {
         auth,
         db,
         storage,
+        functions,
         user,
         role,
         loading

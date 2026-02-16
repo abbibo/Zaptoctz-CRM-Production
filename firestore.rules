@@ -25,6 +25,8 @@ service cloud.firestore {
     }
 
     match /members/{userId} {
+
+      
       // Allow users to read their own profile.
       // Allow Admins and Managers to read all profiles.
       allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin() || isManager());
@@ -40,10 +42,10 @@ service cloud.firestore {
       
       // Allow users to create their own profile during registration (if applicable)
       // but they cannot set the 'role' to admin/manager directly.
-      // (Assuming 'role' defaults to 'member' or is set by backend if not provided? 
-      // Or we block role setting on create too.)
       allow create: if isSignedIn() && request.auth.uid == userId &&
                      (!request.resource.data.keys().hasAny(['role']) || request.resource.data.role == 'member');
+
+
     }
     
     match /leads/{leadId} {

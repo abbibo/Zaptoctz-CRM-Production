@@ -24,7 +24,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-const email = process.env.ADMIN_EMAIL || "zaptockz@13.online";
+const email = process.env.ADMIN_EMAIL || "zaptockz@gmail.com";
 const password = process.env.ADMIN_PASSWORD || "Z@pT0ckz!9QmL7#A";
 
 const verify = async () => {

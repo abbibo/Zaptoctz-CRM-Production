@@ -107,7 +107,7 @@ const Login = () => {
           navigate("/member-dashboard");
         }
       } else {
-        setError("User role not found.");
+        setError("User role not found. If you just signed up, please try again in a moment.");
         setLoading(false);
       }
     } catch (err) {

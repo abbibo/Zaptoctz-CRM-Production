@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { auth, db } from "../../context/FirebaseContext";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, collection, getDocs, updateDoc } from "firebase/firestore";
+import { db, functions } from "../../context/FirebaseContext";
+import { httpsCallable } from "firebase/functions";
+import { doc, collection, getDocs, updateDoc } from "firebase/firestore";
 
 const AddMember = () => {
   const [name, setName] = useState("");
@@ -59,25 +59,25 @@ const AddMember = () => {
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      const memberData = {
+      const createMember = httpsCallable(functions, 'createMember');
+      const result = await createMember({
+        email,
+        password,
         name,
         phone,
         role,
         referralLink,
-        email,
-        status,
-      };
-      await setDoc(doc(db, "members", user.uid), memberData);
+        status
+      });
+
+      console.log(result.data.message);
 
       setSuccess(true);
       resetForm();
       refreshMembers();
     } catch (err) {
       console.error("Error adding member:", err);
-      setError("Failed to add member. Please try again.");
+      setError(`Failed to add member: ${err.message}`);
     }
   };
 
