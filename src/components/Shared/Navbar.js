@@ -43,14 +43,12 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center space-x-2">
-            {role && (
-              <Link
-                to={dashboardLink}
-                className="text-2xl font-extrabold text-blue-400 hover:text-blue-500 transition"
-              >
-                Zaptockz CRM
-              </Link>
-            )}
+            <Link
+              to={dashboardLink}
+              className="text-2xl font-extrabold text-blue-400 hover:text-blue-500 transition"
+            >
+              Zaptockz CRM
+            </Link>
           </div>
 
           {role && (

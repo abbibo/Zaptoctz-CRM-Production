@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../context/FirebaseContext";
 import { collection, getDocs, addDoc, getDoc, doc, query, where } from "firebase/firestore";
-import Papa from "papaparse";
+import { parseImportData, parsePasteData } from "../../utils/fileImport";
 
 const AssignLeads = () => {
   const [leadName, setLeadName] = useState("");
@@ -10,13 +10,18 @@ const AssignLeads = () => {
   const [dateAssigned, setDateAssigned] = useState("");
   const [customNote, setCustomNote] = useState("");
   const [members, setMembers] = useState([]);
+  const [existingLead, setExistingLead] = useState(null);
+
+  // Import States
+  const [importMode, setImportMode] = useState("file"); // 'file' or 'paste'
+  const [pasteContent, setPasteContent] = useState("");
   const [csvData, setCsvData] = useState([]);
   const [csvStatus, setCsvStatus] = useState([]);
+  const [csvLoading, setCsvLoading] = useState(false);
+  const [assigningLoading, setAssigningLoading] = useState(false);
+
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  const [existingLead, setExistingLead] = useState(null);
-  const [csvLoading, setCsvLoading] = useState(false); // Loading state for CSV upload
-  const [assigningLoading, setAssigningLoading] = useState(false); // Loading state for assigning leads from CSV
 
   useEffect(() => {
     const fetchAssignedMembers = async () => {
@@ -137,6 +142,56 @@ const AssignLeads = () => {
     }
   };
 
+  const processLeadsData = async (leads) => {
+    setCsvLoading(true);
+    setCsvStatus([]);
+    setCsvData([]);
+    
+    const statusChecks = [];
+
+    for (const lead of leads) {
+      const phoneTrimmed = (lead.phone || "").trim();
+      if (!lead.name || !phoneTrimmed) continue;
+
+      // Validate phone
+      if (!/^\d{10}$/.test(phoneTrimmed)) {
+        statusChecks.push({
+          ...lead,
+          phone: phoneTrimmed,
+          status: "Invalid Phone"
+        });
+        continue;
+      }
+
+      const { exists, lead: existing } = await checkDuplicateLead(phoneTrimmed);
+      statusChecks.push({
+        ...lead,
+        phone: phoneTrimmed,
+        status: exists ? `Already Assigned to ${existing.assignedToName}` : "Available",
+      });
+    }
+
+    // Ensure each phone number is only "Available" once.
+    const seenPhones = new Set();
+    const finalStatusChecks = statusChecks.map((lead) => {
+      if (lead.status === "Available") {
+        if (seenPhones.has(lead.phone)) {
+          // Mark this as duplicate in CSV
+          return { ...lead, status: "Duplicate in CSV" };
+        } else {
+          seenPhones.add(lead.phone);
+          return lead;
+        }
+      } else {
+        return lead;
+      }
+    });
+
+    setCsvStatus(finalStatusChecks);
+    setCsvData(leads);
+    setCsvLoading(false);
+  };
+
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) {
@@ -144,62 +199,39 @@ const AssignLeads = () => {
       return;
     }
 
-    setCsvLoading(true); // Start loading animation
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: async (results) => {
-        const data = results.data;
-        const statusChecks = [];
+    try {
+      setCsvLoading(true);
+      const leads = await parseImportData(file);
+      await processLeadsData(leads);
+    } catch (err) {
+      console.error("Import Error:", err);
+      setError(typeof err === 'string' ? err : "Failed to import file.");
+      setCsvLoading(false);
+    }
+  };
 
-        for (const lead of data) {
-          const phoneTrimmed = (lead.phone || "").trim();
-          if (!lead.name || !phoneTrimmed) continue;
+  const handlePasteParse = async () => {
+    if (!pasteContent.trim()) {
+      setError("Please paste some data first.");
+      return;
+    }
+    setError("");
+    setSuccess(false);
 
-          // Validate phone
-          if (!/^\d{10}$/.test(phoneTrimmed)) {
-            statusChecks.push({
-              ...lead,
-              phone: phoneTrimmed,
-              status: "Invalid Phone"
-            });
-            continue;
-          }
-
-          const { exists, lead: existing } = await checkDuplicateLead(phoneTrimmed);
-          statusChecks.push({
-            ...lead,
-            phone: phoneTrimmed,
-            status: exists ? `Already Assigned to ${existing.assignedToName}` : "Available",
-          });
-        }
-
-        // Ensure each phone number is only "Available" once.
-        const seenPhones = new Set();
-        const finalStatusChecks = statusChecks.map((lead) => {
-          if (lead.status === "Available") {
-            if (seenPhones.has(lead.phone)) {
-              // Mark this as duplicate in CSV
-              return { ...lead, status: "Duplicate in CSV" };
-            } else {
-              seenPhones.add(lead.phone);
-              return lead;
-            }
-          } else {
-            return lead;
-          }
-        });
-
-        setCsvStatus(finalStatusChecks);
-        setCsvData(data);
-        setCsvLoading(false); // Stop loading
-      },
-      error: (err) => {
-        console.error("Error parsing CSV:", err);
-        setError("Failed to parse CSV. Ensure the file is valid.");
-        setCsvLoading(false); // Stop loading
-      },
-    });
+    try {
+      setCsvLoading(true);
+      const leads = parsePasteData(pasteContent);
+      if (leads.length === 0) {
+        setError("No valid leads found in pasted text. Ensure format is correct (Name, Phone).");
+        setCsvLoading(false);
+        return;
+      }
+      await processLeadsData(leads);
+    } catch (err) {
+      console.error("Paste Parse Error:", err);
+      setError("Failed to parse pasted data.");
+      setCsvLoading(false);
+    }
   };
 
   const handleAssignCsvLeads = async () => {
@@ -244,6 +276,7 @@ const AssignLeads = () => {
       setSuccess(true);
       setCsvData([]);
       setCsvStatus([]);
+      setPasteContent("");
       setAssignedTo("");
       setDateAssigned(new Date().toISOString().split("T")[0]); // Reset date to today
     } catch (err) {
@@ -273,10 +306,7 @@ const AssignLeads = () => {
 
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 mb-10 space-y-4">
           <h2 className="text-xl font-bold text-gray-100 border-b border-gray-700 pb-2">Manual Assignment</h2>
-          <p className="text-sm text-gray-400">
-            Phone number must be exactly 10 digits and should not contain +91 or 91.
-          </p>
-          <form onSubmit={handleAssignLead} className="space-y-4">
+           <form onSubmit={handleAssignLead} className="space-y-4">
             <div>
               <label className="block mb-2 text-gray-400 font-bold">Lead Name</label>
               <input
@@ -342,58 +372,101 @@ const AssignLeads = () => {
         </div>
 
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 space-y-4 relative">
-          <h2 className="text-xl font-bold text-gray-100 border-b border-gray-700 pb-2">Import Leads via CSV</h2>
-          <p className="text-sm text-gray-400 mb-2">
-            Please upload a valid CSV file. Ensure the "phone" field is a 10-digit number with no +91 or 91 prefix.
-          </p>
-          <input
-            type="file"
-            accept=".csv"
-            onChange={handleFileUpload}
-            className="w-full p-3 bg-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <h2 className="text-xl font-bold text-gray-100 border-b border-gray-700 pb-2">
+            Import Leads (CSV, Excel)
+          </h2>
 
-          {csvLoading && (
-            <div className="text-center text-yellow-500 font-bold">Processing CSV... Please wait.</div>
+           {/* Import Mode Toggle */}
+           <div className="flex space-x-4 mb-4">
+              <button 
+                onClick={() => setImportMode("file")}
+                className={`px-4 py-2 rounded font-bold transition ${importMode === "file" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600"}`}
+              >
+                  Upload File
+              </button>
+              <button 
+                onClick={() => setImportMode("paste")}
+                className={`px-4 py-2 rounded font-bold transition ${importMode === "paste" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600"}`}
+              >
+                  Paste Data
+              </button>
+          </div>
+
+          <p className="text-sm text-gray-400 mb-2">
+            {importMode === "file" 
+                ? 'Upload a CSV or Excel file with "name" and "phone" columns.'
+                : 'Paste your lead data here (e.g. copied from Excel).'}
+             Phone must be 10 digits (no +91).
+          </p>
+
+          {importMode === "file" && (
+            <input
+                type="file"
+                accept=".csv, .xlsx, .xls"
+                onChange={handleFileUpload}
+                className="w-full p-3 bg-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           )}
 
-{csvStatus.length > 0 && !csvLoading && (
-  <div className="overflow-x-auto border border-gray-700 rounded bg-gray-700 p-3 mt-4">
-    <h3 className="text-gray-300 font-bold mb-2">CSV Upload Summary</h3>
-    <table className="w-full text-left text-sm">
-      <thead>
-        <tr className="border-b border-gray-600">
-          <th className="p-2 text-gray-300 font-bold uppercase">Name</th>
-          <th className="p-2 text-gray-300 font-bold uppercase">Phone</th>
-          <th className="p-2 text-gray-300 font-bold uppercase">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {csvStatus.map((lead, index) => (
-          <tr key={index} className="border-b border-gray-600 hover:bg-gray-600 transition">
-            <td className="p-2 text-gray-100">{lead.name}</td>
-            <td className="p-2 text-gray-100">{lead.phone}</td>
-            <td
-              className={`p-2 font-bold ${
-                lead.status === "Available"
-                  ? "text-green-500"
-                  : lead.status === "Invalid Phone"
-                  ? "text-red-500"
-                  : lead.status.includes("Duplicate in CSV")
-                  ? "text-purple-500"
-                  : lead.status.includes("Already Assigned")
-                  ? "text-yellow-500"
-                  : "text-yellow-500"
-              }`}
-            >
-              {lead.status}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-)}
+          {importMode === "paste" && (
+            <div className="space-y-2">
+                <textarea
+                    rows="5"
+                    className="w-full p-3 bg-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-mono"
+                    placeholder={`Name\tPhone\nJohn Doe\t9876543210\n...`}
+                    value={pasteContent}
+                    onChange={(e) => setPasteContent(e.target.value)}
+                />
+                <button
+                    onClick={handlePasteParse}
+                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-bold transition"
+                >
+                    Parse Paste Data
+                </button>
+            </div>
+          )}
+
+          {csvLoading && (
+            <div className="text-center text-yellow-500 font-bold">Processing data... Please wait.</div>
+          )}
+
+          {csvStatus.length > 0 && !csvLoading && (
+            <div className="overflow-x-auto border border-gray-700 rounded bg-gray-700 p-3 mt-4">
+              <h3 className="text-gray-300 font-bold mb-2">Import Summary</h3>
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-gray-600">
+                    <th className="p-2 text-gray-300 font-bold uppercase">Name</th>
+                    <th className="p-2 text-gray-300 font-bold uppercase">Phone</th>
+                    <th className="p-2 text-gray-300 font-bold uppercase">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {csvStatus.map((lead, index) => (
+                    <tr key={index} className="border-b border-gray-600 hover:bg-gray-600 transition">
+                      <td className="p-2 text-gray-100">{lead.name}</td>
+                      <td className="p-2 text-gray-100">{lead.phone}</td>
+                      <td
+                        className={`p-2 font-bold ${
+                          lead.status === "Available"
+                            ? "text-green-500"
+                            : lead.status === "Invalid Phone"
+                            ? "text-red-500"
+                            : lead.status.includes("Duplicate in CSV")
+                            ? "text-purple-500"
+                            : lead.status.includes("Already Assigned")
+                            ? "text-yellow-500"
+                            : "text-yellow-500"
+                        }`}
+                      >
+                        {lead.status}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           <div>
             <label className="block mb-2 text-gray-400 font-bold">Assign To</label>
@@ -422,15 +495,15 @@ const AssignLeads = () => {
           </div>
 
           {error && (
-  <p className="text-red-500 mb-4 text-center font-bold">
-    {error}
-  </p>
-)}
-{success && (
-  <p className="text-green-500 mb-4 text-center font-bold">
-    Lead(s) assigned successfully!
-  </p>
-)}
+            <p className="text-red-500 mb-4 text-center font-bold">
+              {error}
+            </p>
+          )}
+          {success && (
+            <p className="text-green-500 mb-4 text-center font-bold">
+              Lead(s) assigned successfully!
+            </p>
+          )}
 
           {assigningLoading && (
             <div className="text-center text-yellow-500 font-bold">Assigning leads... Please wait.</div>
@@ -446,7 +519,7 @@ const AssignLeads = () => {
                   : "bg-blue-500 hover:bg-blue-600"
               }`}
             >
-              Assign CSV Leads
+              Assign Leads
             </button>
           )}
         </div>

@@ -108,15 +108,35 @@ exports.createMember = functions.https.onCall(async (data, context) => {
   }
 
   try {
-    // 1. Create user in Firebase Auth
-    const userRecord = await admin.auth().createUser({
-      email: email,
-      password: password,
-      displayName: name,
-      disabled: status === 'inactive'
-    });
-
-    const uid = userRecord.uid;
+    // 1. Create or Update user in Firebase Auth
+    let uid;
+    try {
+      const userRecord = await admin.auth().getUserByEmail(email);
+      uid = userRecord.uid;
+      console.log(`User ${email} already exists (UID: ${uid}). Updating...`);
+      
+      // Update password if provided
+      if (password) {
+        await admin.auth().updateUser(uid, {
+          password: password,
+          displayName: name,
+          disabled: status === 'inactive'
+        });
+      }
+    } catch (error) {
+      if (error.code === 'auth/user-not-found') {
+        const userRecord = await admin.auth().createUser({
+          email: email,
+          password: password,
+          displayName: name,
+          disabled: status === 'inactive'
+        });
+        uid = userRecord.uid;
+        console.log(`Created new user ${email} (UID: ${uid})`);
+      } else {
+        throw error;
+      }
+    }
 
     // 2. Set custom claims (role)
     await admin.auth().setCustomUserClaims(uid, { role: role });

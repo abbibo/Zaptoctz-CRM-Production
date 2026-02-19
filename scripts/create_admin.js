@@ -42,8 +42,8 @@ const db = initializeFirestore(app, {
 
 // 4. Admin Credentials
 const adminName = "System Admin";
-const adminEmail = "zaptockz@gmail.com";
-const adminPassword = "Z@pT0ckz!9QmL7#A";
+const adminEmail = "admin@example.com";
+const adminPassword = "change-me-immediately";
 const adminPhone = "0000000000";
 
 const createAdmin = async () => {
