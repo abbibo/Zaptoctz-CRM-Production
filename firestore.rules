@@ -29,7 +29,7 @@ service cloud.firestore {
       
       // Allow users to read their own profile.
       // Allow Admins and Managers to read all profiles.
-      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin() || isManager());
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
       
       // Allow users to update their own profile, but NOT the 'role' field.
       // Allow Admins to update everything including roles.
