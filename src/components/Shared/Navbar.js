@@ -45,6 +45,7 @@ const Navbar = () => {
           <div className="flex-shrink-0 flex items-center space-x-2">
             <Link
               to={dashboardLink}
+              // Force git update
               className="text-2xl font-extrabold text-blue-400 hover:text-blue-500 transition"
             >
               Zaptockz CRM
