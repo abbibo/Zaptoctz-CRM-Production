@@ -2,6 +2,32 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 
 /**
+ * Cleans phone number to 10 digits.
+ * Removes non-digits.
+ * Removes leading +91, 91, or 0 if result is > 10 digits.
+ */
+export const cleanPhoneNumber = (phone) => {
+  if (!phone) return "";
+  let cleaned = String(phone).replace(/\D/g, ""); // Remove non-digits
+
+  // If starts with 91 and length is 12, remove 91
+  if (cleaned.length > 10 && cleaned.startsWith("91")) {
+      cleaned = cleaned.substring(2);
+  }
+  // If starts with 0 and length is 11, remove 0
+  if (cleaned.length > 10 && cleaned.startsWith("0")) {
+      cleaned = cleaned.substring(1);
+  }
+  
+  // If simply > 10 digits, we might want to take last 10? 
+  // But safest is to return what we have and let validation fail if it's still weird.
+  // For now, let's stick to the common Indian prefixes.
+
+  return cleaned;
+};
+
+
+/**
  * Normalizes lead data to { name, phone }.
  */
 const normalizeLead = (lead) => {
@@ -35,7 +61,7 @@ const normalizeLead = (lead) => {
 
   return {
     name: name ? String(name).trim() : "",
-    phone: phone ? String(phone).trim() : "",
+    phone: cleanPhoneNumber(phone), // Use cleaning logic here too
   };
 };
 

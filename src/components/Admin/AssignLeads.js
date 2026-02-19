@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../context/FirebaseContext";
 import { collection, getDocs, addDoc, query, where, getDoc, doc } from "firebase/firestore";
-import { parseImportData, parsePasteData } from "../../utils/fileImport";
+import { parseImportData, parsePasteData, cleanPhoneNumber } from "../../utils/fileImport";
 
 const AssignLeads = () => {
   const [leadName, setLeadName] = useState("");
@@ -71,14 +71,14 @@ const AssignLeads = () => {
     }
 
     // Validate phone number: 10 digits, no +91 or 91
-    const phoneTrimmed = phone.trim();
-    if (!/^\d{10}$/.test(phoneTrimmed)) {
-      setError("Phone number must be exactly 10 digits and should not contain +91 or 91.");
+    const phoneCleaned = cleanPhoneNumber(phone);
+    if (!/^\d{10}$/.test(phoneCleaned)) {
+      setError("Phone number must be exactly 10 digits.");
       return;
     }
 
     try {
-      const { exists, lead } = await checkDuplicateLead(phoneTrimmed);
+      const { exists, lead } = await checkDuplicateLead(phoneCleaned);
       if (exists) {
         setError(`Lead already exists and is assigned to ${lead.assignedToName}.`);
         return;
@@ -86,7 +86,7 @@ const AssignLeads = () => {
 
       await addDoc(collection(db, "leads"), {
         leadName,
-        phone: phoneTrimmed,
+        phone: phoneCleaned,
         assignedTo,
         assignedToName: members.find((m) => m.id === assignedTo)?.name || "Unknown",
         dateAssigned,
@@ -132,6 +132,8 @@ const AssignLeads = () => {
       if (!name || !phoneNum) continue;
 
       // Validate phone
+      // Note: lead.phone is already cleaned by normalizeLead in fileImport.js
+      // We double check if it's 10 digits.
       if (!/^\d{10}$/.test(phoneNum)) {
         statusChecks.push({
           ...lead,

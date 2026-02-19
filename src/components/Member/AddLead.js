@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { db, auth } from "../../context/FirebaseContext";
 import { collection, addDoc, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import Papa from "papaparse";
+import { cleanPhoneNumber } from "../../utils/fileImport";
 
 const AddLead = () => {
   const [leadName, setLeadName] = useState("");
@@ -63,14 +64,14 @@ const AddLead = () => {
     }
 
     // Validate phone number
-    const phoneTrimmed = phone.trim();
-    if (!/^\d{10}$/.test(phoneTrimmed)) {
-      setError("Phone number must be exactly 10 digits and should not contain +91 or 91.");
+    const phoneCleaned = cleanPhoneNumber(phone);
+    if (!/^\d{10}$/.test(phoneCleaned)) {
+      setError("Phone number must be exactly 10 digits.");
       return;
     }
 
     try {
-      const { exists, lead } = await checkDuplicateLead(phoneTrimmed);
+      const { exists, lead } = await checkDuplicateLead(phoneCleaned);
       if (exists) {
         setExistingLead(lead);
         setError("This lead already exists.");
@@ -79,7 +80,7 @@ const AddLead = () => {
 
       await addDoc(collection(db, "leads"), {
         leadName,
-        phone: phoneTrimmed,
+        phone: phoneCleaned,
         assignedTo: auth.currentUser.uid,
         assignedToName: userName,
         assignedBy: userName,
@@ -128,19 +129,20 @@ const AddLead = () => {
           const { name, phone } = lead;
           if (!name || !phone) continue;
 
-          const phoneTrimmed = phone.trim();
-          if (!/^\d{10}$/.test(phoneTrimmed)) {
+          const phoneCleaned = cleanPhoneNumber(phone);
+          if (!/^\d{10}$/.test(phoneCleaned)) {
             leadsWithStatus.push({
               ...lead,
+              phone: phoneCleaned,
               status: "Invalid Phone",
             });
             continue;
           }
 
-          const { exists } = await checkDuplicateLead(phoneTrimmed);
+          const { exists } = await checkDuplicateLead(phoneCleaned);
           leadsWithStatus.push({
             ...lead,
-            phone: phoneTrimmed,
+            phone: phoneCleaned,
             status: exists ? `Number already assigned to Self/Someonelse` : "Available",
           });
         }
