@@ -4,11 +4,19 @@ import { db } from "../../context/FirebaseContext";
 import { collection, getDocs } from "firebase/firestore";
 
 const AdminDashboard = () => {
-  const [kpi, setKpi] = useState({ totalLeads: 0, contacted: 0, pending: 0, interested: 0 });
+  const [kpi, setKpi] = useState({ 
+    totalLeads: 0, 
+    contacted: 0, 
+    pending: 0, 
+    interested: 0,
+    totalMembers: 0,
+    activeMembers: 0
+  });
 
   useEffect(() => {
     const fetchKpiData = async () => {
       try {
+        // Fetch Leads
         const leadsSnapshot = await getDocs(collection(db, "leads"));
         const leads = leadsSnapshot.docs.map((doc) => doc.data());
 
@@ -16,11 +24,22 @@ const AdminDashboard = () => {
         const contactedLeads = leads.filter((lead) => lead.status !== "Pending");
         const interestedLeads = leads.filter((lead) => lead.status === "Interested");
 
+        // Fetch Members
+        const membersSnapshot = await getDocs(collection(db, "members"));
+        const members = membersSnapshot.docs.map((doc) => doc.data());
+
+        // Filter for role 'member' specifically, or count all users in 'members' collection if that's the definition of "Registered Members"
+        // Based on plan: "Registered Members" are users with role: 'member'
+        const registeredMembers = members.filter(m => m.role === 'member');
+        const activeMembers = registeredMembers.filter(m => m.status === 'active');
+
         setKpi({
           totalLeads: leads.length,
           contacted: contactedLeads.length,
           pending: pendingLeads.length,
           interested: interestedLeads.length,
+          totalMembers: registeredMembers.length,
+          activeMembers: activeMembers.length,
         });
       } catch (err) {
         console.error("Error fetching KPI data:", err);
@@ -40,7 +59,7 @@ const AdminDashboard = () => {
         </header>
 
         {/* KPI Section */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6 mb-8">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center border border-gray-700 hover:bg-gray-700 transition transform hover:scale-105">
             <p className="text-sm text-gray-400 font-bold uppercase tracking-wider mb-2">
               Total Leads
@@ -64,6 +83,18 @@ const AdminDashboard = () => {
               Interested Leads
             </p>
             <p className="text-3xl font-extrabold text-gray-100">{kpi.interested}</p>
+          </div>
+           <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center border border-gray-700 hover:bg-gray-700 transition transform hover:scale-105">
+            <p className="text-sm text-gray-400 font-bold uppercase tracking-wider mb-2">
+              Total Members
+            </p>
+            <p className="text-3xl font-extrabold text-gray-100">{kpi.totalMembers}</p>
+          </div>
+           <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center border border-gray-700 hover:bg-gray-700 transition transform hover:scale-105">
+            <p className="text-sm text-gray-400 font-bold uppercase tracking-wider mb-2">
+              Active Members
+            </p>
+            <p className="text-3xl font-extrabold text-gray-100">{kpi.activeMembers}</p>
           </div>
         </div>
 
