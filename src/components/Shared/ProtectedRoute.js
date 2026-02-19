@@ -5,7 +5,14 @@ import { useFirebase } from "../../context/FirebaseContext";
 const ProtectedRoute = ({ children, role }) => {
   const { user, role: userRole, loading } = useFirebase();
 
-  if (loading) return <div className="text-white">Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+        Starting...
+      </div>
+    );
+  }
+
   if (!user) return <Navigate to="/login" />;
 
   // If the user's role doesn't match the required role, redirect them to their respective dashboard
@@ -14,7 +21,11 @@ const ProtectedRoute = ({ children, role }) => {
     if (userRole === "manager") return <Navigate to="/manager-dashboard" />;
     if (userRole === "member") return <Navigate to="/member-dashboard" />;
     // Fallback if role is not recognized or claim is missing yet
-    return <div className="text-white">Access Denied</div>; 
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+        Access Denied. Current Role: {userRole || "None"}
+      </div>
+    ); 
   }
 
   return children;
