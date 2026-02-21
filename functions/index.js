@@ -63,8 +63,14 @@ exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
   };
 
   try {
-    await admin.firestore().collection("members").doc(uid).set(newUser);
-    console.log(`Created member document for user ${uid}`);
+    const docRef = admin.firestore().collection("members").doc(uid);
+    const doc = await docRef.get();
+    if (!doc.exists) {
+      await docRef.set(newUser);
+      console.log(`Created member document for user ${uid}`);
+    } else {
+      console.log(`Member document for user ${uid} already exists (likely created by createMember). Skipping.`);
+    }
   } catch (error) {
     console.error(`Error creating member document for user ${uid}:`, error);
   }
@@ -108,34 +114,22 @@ exports.createMember = functions.https.onCall(async (data, context) => {
   }
 
   try {
-    // 1. Create or Update user in Firebase Auth
+    // 1. Create user in Firebase Auth
     let uid;
     try {
-      const userRecord = await admin.auth().getUserByEmail(email);
+      const userRecord = await admin.auth().createUser({
+        email: email,
+        password: password,
+        displayName: name,
+        disabled: status === 'inactive'
+      });
       uid = userRecord.uid;
-      console.log(`User ${email} already exists (UID: ${uid}). Updating...`);
-      
-      // Update password if provided
-      if (password) {
-        await admin.auth().updateUser(uid, {
-          password: password,
-          displayName: name,
-          disabled: status === 'inactive'
-        });
-      }
+      console.log(`Created new user ${email} (UID: ${uid})`);
     } catch (error) {
-      if (error.code === 'auth/user-not-found') {
-        const userRecord = await admin.auth().createUser({
-          email: email,
-          password: password,
-          displayName: name,
-          disabled: status === 'inactive'
-        });
-        uid = userRecord.uid;
-        console.log(`Created new user ${email} (UID: ${uid})`);
-      } else {
-        throw error;
+      if (error.code === 'auth/email-already-exists') {
+        throw new functions.https.HttpsError('already-exists', 'A member with this email already exists.');
       }
+      throw error;
     }
 
     // 2. Set custom claims (role)
@@ -154,7 +148,7 @@ exports.createMember = functions.https.onCall(async (data, context) => {
       createdBy: callerUid
     };
 
-    await admin.firestore().collection("members").doc(uid).set(newMember);
+    await admin.firestore().collection("members").doc(uid).set(newMember, { merge: true });
 
     return { success: true, message: `Member ${email} created successfully.` };
 

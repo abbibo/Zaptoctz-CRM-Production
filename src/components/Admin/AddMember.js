@@ -33,7 +33,7 @@ const AddMember = () => {
     setMembers(membersData);
   };
 
-  const resetForm = () => {
+  const resetForm = (keepSuccess = false) => {
     setName("");
     setPhone("");
     setRole("member");
@@ -44,7 +44,9 @@ const AddMember = () => {
     setEditMode(false);
     setEditMemberId(null);
     setError("");
-    setSuccess(false);
+    if (!keepSuccess) {
+      setSuccess(false);
+    }
   };
 
   // Add new member
@@ -73,11 +75,15 @@ const AddMember = () => {
       console.log(result.data.message);
 
       setSuccess(true);
-      resetForm();
+      resetForm(true); // Keep success message
       refreshMembers();
     } catch (err) {
       console.error("Error adding member:", err);
-      setError(`Failed to add member: ${err.message}`);
+      // Detailed error message if email already exists
+      const errorMessage = err.message.includes('already-exists') 
+        ? "A member with this email already exists." 
+        : err.message;
+      setError(`Failed to add member: ${errorMessage}`);
     }
   };
 
@@ -116,7 +122,7 @@ const AddMember = () => {
         status,
       });
       setSuccess(true);
-      resetForm();
+      resetForm(true); // Keep success message
       refreshMembers();
     } catch (err) {
       console.error("Error updating member:", err);
@@ -139,6 +145,7 @@ const AddMember = () => {
               placeholder="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              autoComplete="off"
               className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
@@ -169,6 +176,7 @@ const AddMember = () => {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="new-password" // Helps prevent generic email autofill
               className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
@@ -176,6 +184,7 @@ const AddMember = () => {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
               className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <select
