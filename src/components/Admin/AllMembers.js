@@ -8,6 +8,7 @@ import {
   doc,
   writeBatch,
 } from "firebase/firestore";
+import { FaCopy } from "react-icons/fa";
 
 const AdminMembersDashboard = () => {
   const [members, setMembers] = useState([]);
@@ -30,6 +31,7 @@ const AdminMembersDashboard = () => {
   const [showBulkReassignModal, setShowBulkReassignModal] = useState(false);
   const [showBulkDeleteConfirmation, setShowBulkDeleteConfirmation] = useState(false);
   const [showBulkUnassignConfirmation, setShowBulkUnassignConfirmation] = useState(false); // New state for bulk unassign
+  const [expandedManager, setExpandedManager] = useState(null);
 
   // Fetch Active Members on Component Mount
   useEffect(() => {
@@ -309,6 +311,9 @@ const AdminMembersDashboard = () => {
     return date.toLocaleDateString("en-US");
   };
 
+  const managers = members.filter((m) => m.role === "manager");
+  const agents = members.filter((m) => m.role !== "manager");
+
   return (
     <div className="p-6 bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white min-h-screen font-sans">
       <h1 className="text-4xl font-extrabold text-center mb-8 text-gray-100 tracking-wide">
@@ -339,23 +344,147 @@ const AdminMembersDashboard = () => {
 
       {/* Members List */}
       {!selectedMember && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {members.map((member) => (
-            <div
-              key={member.id}
-              className="bg-gray-800 p-6 rounded shadow-lg hover:shadow-xl cursor-pointer hover:bg-gray-700 transition flex flex-col justify-center items-start"
-              onClick={() => fetchLeads(member.id)}
-            >
-              <h2 className="text-2xl font-bold mb-2 text-gray-100">{member.name}</h2>
-              <p className="text-sm text-gray-400">Email: {member.email}</p>
-              <p className="text-sm text-gray-400">Password: {member.password}</p>
-              {member.role && (
-                <p className="mt-1 text-xs text-gray-500 uppercase font-bold">
-                  {member.role}
-                </p>
-              )}
+        <div className="space-y-8">
+          {/* Managers Section */}
+          <div>
+            <h2 className="text-2xl font-bold mb-4 text-gray-200 border-b border-gray-700 pb-2">Managers</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {managers.map((manager) => (
+                <div
+                  key={manager.id}
+                  className="bg-gray-800 p-6 rounded shadow-lg hover:shadow-xl cursor-default transition flex flex-col justify-start items-start"
+                >
+                  <div className="w-full cursor-pointer" onClick={() => fetchLeads(manager.id)}>
+                    <h2 className="text-2xl font-bold mb-4 text-indigo-400">{manager.name}</h2>
+                    <div className="flex items-center justify-between w-full mb-2">
+                      <p className="text-sm text-gray-400">Email: <span className="text-gray-300">{manager.email}</span></p>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (manager.email) {
+                            navigator.clipboard.writeText(manager.email);
+                            setSuccessMessage("Email copied to clipboard!");
+                            setTimeout(() => setSuccessMessage(""), 3000);
+                          }
+                        }}
+                        className="text-gray-400 hover:text-white p-2 rounded transition"
+                        title="Copy Email"
+                      >
+                        <FaCopy />
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between w-full mb-2">
+                      <p className="text-sm text-gray-400">Password: <span className="text-gray-300">{manager.password}</span></p>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (manager.password) {
+                            navigator.clipboard.writeText(manager.password);
+                            setSuccessMessage("Password copied to clipboard!");
+                            setTimeout(() => setSuccessMessage(""), 3000);
+                          }
+                        }}
+                        className="text-gray-400 hover:text-white p-2 rounded transition"
+                        title="Copy Password"
+                      >
+                        <FaCopy />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Assigned Agents Dropdown Section */}
+                  <div className="w-full mt-4 border-t border-gray-700 pt-4">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedManager(expandedManager === manager.id ? null : manager.id);
+                      }}
+                      className="text-sm text-blue-400 hover:text-blue-300 font-bold focus:outline-none flex items-center justify-between w-full"
+                    >
+                      <span>{expandedManager === manager.id ? "Hide Assigned Agents" : "View Assigned Agents"}</span>
+                      <span>{expandedManager === manager.id ? "▲" : "▼"}</span>
+                    </button>
+                    
+                    {expandedManager === manager.id && (
+                      <div className="mt-3 bg-gray-900 rounded p-3 space-y-2 max-h-48 overflow-y-auto">
+                        {(manager.assignedMembers || []).length > 0 ? (
+                          (manager.assignedMembers || []).map((agentId) => {
+                            const agent = agents.find(a => a.id === agentId);
+                            if (!agent) return null;
+                            return (
+                              <div key={agentId} className="text-sm text-gray-300 flex justify-between items-center border-b border-gray-800 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0">
+                                <span>{agent.name}</span>
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); fetchLeads(agent.id); }}
+                                  className="text-xs bg-blue-600 hover:bg-blue-500 px-2 py-1 rounded text-white font-semibold transition"
+                                >
+                                  View Leads
+                                </button>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <p className="text-sm text-gray-500 italic">No agents assigned.</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {managers.length === 0 && <p className="text-gray-400">No managers found.</p>}
             </div>
-          ))}
+          </div>
+
+          {/* Agents Section */}
+          <div>
+            <h2 className="text-2xl font-bold mb-4 text-gray-200 border-b border-gray-700 pb-2 mt-8">Agents</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {agents.map((agent) => (
+                <div
+                  key={agent.id}
+                  className="bg-gray-800 p-6 rounded shadow-lg hover:shadow-xl cursor-pointer hover:bg-gray-700 transition flex flex-col justify-center items-start"
+                  onClick={() => fetchLeads(agent.id)}
+                >
+                  <h2 className="text-2xl font-bold mb-4 text-gray-100">{agent.name}</h2>
+                  <div className="flex items-center justify-between w-full mb-2">
+                    <p className="text-sm text-gray-400">Email: <span className="text-gray-300">{agent.email}</span></p>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (agent.email) {
+                          navigator.clipboard.writeText(agent.email);
+                          setSuccessMessage("Email copied to clipboard!");
+                          setTimeout(() => setSuccessMessage(""), 3000);
+                        }
+                      }}
+                      className="text-gray-400 hover:text-white p-2 rounded transition"
+                      title="Copy Email"
+                    >
+                      <FaCopy />
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between w-full mb-2">
+                    <p className="text-sm text-gray-400">Password: <span className="text-gray-300">{agent.password}</span></p>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (agent.password) {
+                          navigator.clipboard.writeText(agent.password);
+                          setSuccessMessage("Password copied to clipboard!");
+                          setTimeout(() => setSuccessMessage(""), 3000);
+                        }
+                      }}
+                      className="text-gray-400 hover:text-white p-2 rounded transition"
+                      title="Copy Password"
+                    >
+                      <FaCopy />
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {agents.length === 0 && <p className="text-gray-400">No agents found.</p>}
+            </div>
+          </div>
         </div>
       )}
 
