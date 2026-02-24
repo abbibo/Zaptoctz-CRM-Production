@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useFirebase } from "../../context/FirebaseContext";
+import ResetPasswordModal from "./ResetPasswordModal";
 
 const Navbar = () => {
     const { user, role, auth } = useFirebase();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
     const handleLogout = async () => {
         try {
@@ -145,8 +147,18 @@ const Navbar = () => {
                                                 <p className="text-xs text-gray-500 capitalize">{role}</p>
                                             </div>
                                             <button
+                                                onClick={() => {
+                                                    setIsProfileOpen(false);
+                                                    setIsResetModalOpen(true);
+                                                }}
+                                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold"
+                                                role="menuitem"
+                                            >
+                                                Reset Password
+                                            </button>
+                                            <button
                                                 onClick={handleLogout}
-                                                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 font-bold"
                                                 role="menuitem"
                                             >
                                                 Logout
@@ -312,6 +324,16 @@ const Navbar = () => {
                         <button
                             onClick={() => {
                                 closeMobileMenu();
+                                setIsResetModalOpen(true);
+                            }}
+                            className="block w-full text-left bg-gray-700 px-4 py-2 rounded text-base font-bold text-white hover:bg-gray-600 transition mt-4 mb-2"
+                        >
+                            Reset Password
+                        </button>
+
+                        <button
+                            onClick={() => {
+                                closeMobileMenu();
                                 handleLogout();
                             }}
                             className="block w-full text-left bg-red-500 px-4 py-2 rounded text-base font-bold text-white hover:bg-red-600 transition mt-4"
@@ -321,6 +343,12 @@ const Navbar = () => {
                     </div>
                 </div>
             )}
+
+            {/* Password Reset Modal */}
+            <ResetPasswordModal 
+                isOpen={isResetModalOpen} 
+                onClose={() => setIsResetModalOpen(false)} 
+            />
         </nav>
     );
 };

@@ -354,7 +354,10 @@ const AdminMembersDashboard = () => {
                   key={manager.id}
                   className="bg-gray-800 p-6 rounded shadow-lg hover:shadow-xl cursor-default transition flex flex-col justify-start items-start"
                 >
-                  <div className="w-full cursor-pointer" onClick={() => fetchLeads(manager.id)}>
+                  <div className="w-full cursor-pointer" onClick={() => {
+                    if (window.getSelection().toString().length > 0) return;
+                    fetchLeads(manager.id);
+                  }}>
                     <h2 className="text-2xl font-bold mb-4 text-indigo-400">{manager.name}</h2>
                     <div className="flex items-center justify-between w-full mb-2">
                       <p className="text-sm text-gray-400">Email: <span className="text-gray-300">{manager.email}</span></p>
@@ -443,7 +446,10 @@ const AdminMembersDashboard = () => {
                 <div
                   key={agent.id}
                   className="bg-gray-800 p-6 rounded shadow-lg hover:shadow-xl cursor-pointer hover:bg-gray-700 transition flex flex-col justify-center items-start"
-                  onClick={() => fetchLeads(agent.id)}
+                  onClick={() => {
+                    if (window.getSelection().toString().length > 0) return;
+                    fetchLeads(agent.id);
+                  }}
                 >
                   <h2 className="text-2xl font-bold mb-4 text-gray-100">{agent.name}</h2>
                   <div className="flex items-center justify-between w-full mb-2">
