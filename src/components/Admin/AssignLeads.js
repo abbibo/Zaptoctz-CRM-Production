@@ -288,7 +288,7 @@ const AssignLeads = () => {
                 value={assignedTo}
                 onChange={(e) => setAssignedTo(e.target.value)}
               >
-                <option value="">-- Select Member --</option>
+                <option value="">-- Select Agent --</option>
                 {members.map((member) => (
                   <option key={member.id} value={member.id}>
                     {member.name} ({member.email})
@@ -415,7 +415,7 @@ const AssignLeads = () => {
                   value={assignedTo}
                   onChange={(e) => setAssignedTo(e.target.value)}
                 >
-                  <option value="">-- Select Member --</option>
+                  <option value="">-- Select Agent --</option>
                   {members.map((member) => (
                     <option key={member.id} value={member.id}>
                       {member.name} ({member.email})

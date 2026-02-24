@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { db } from "../../context/FirebaseContext";
 import { collection, getDocs } from "firebase/firestore";
+import ManagerCountWidget from "./ManagerCountWidget";
 
 const AdminDashboard = () => {
   const [kpi, setKpi] = useState({ 
@@ -86,7 +87,7 @@ const AdminDashboard = () => {
           </div>
            <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center border border-gray-700 hover:bg-gray-700 transition transform hover:scale-105">
             <p className="text-sm text-gray-400 font-bold uppercase tracking-wider mb-2">
-              Total Members
+              Total Agents
             </p>
             <p className="text-3xl font-extrabold text-gray-100">{kpi.totalMembers}</p>
           </div>
@@ -96,6 +97,7 @@ const AdminDashboard = () => {
             </p>
             <p className="text-3xl font-extrabold text-gray-100">{kpi.activeMembers}</p>
           </div>
+          <ManagerCountWidget />
         </div>
 
         {/* Navigation Links */}
@@ -104,7 +106,7 @@ const AdminDashboard = () => {
             to="/admin-dashboard/add-member"
             className="block p-6 bg-gray-800 rounded-lg shadow-lg border border-gray-700 hover:shadow-2xl hover:bg-gray-700 transition transform hover:scale-105 text-center"
           >
-            <p className="text-lg font-bold text-gray-100">Add Member</p>
+            <p className="text-lg font-bold text-gray-100">Add Agent</p>
           </Link>
           <Link
             to="/admin-dashboard/assign-leads"
@@ -122,7 +124,7 @@ const AdminDashboard = () => {
             to="/admin-dashboard/assign-members-to-manager"
             className="block p-6 bg-gray-800 rounded-lg shadow-lg border border-gray-700 hover:shadow-2xl hover:bg-gray-700 transition transform hover:scale-105 text-center"
           >
-            <p className="text-lg font-bold text-gray-100">Assign Members to Manager</p>
+            <p className="text-lg font-bold text-gray-100">Assign Agents to Manager</p>
           </Link>
           <Link
             to="/admin-dashboard/all-leads"
@@ -134,7 +136,7 @@ const AdminDashboard = () => {
             to="/admin-dashboard/all-members"
             className="block p-6 bg-gray-800 rounded-lg shadow-lg border border-gray-700 hover:shadow-2xl hover:bg-gray-700 transition transform hover:scale-105 text-center"
           >
-            <p className="text-lg font-bold text-gray-100">All Members</p>
+            <p className="text-lg font-bold text-gray-100">All Agents</p>
           </Link>
           <Link
             to="/admin-dashboard/logs"

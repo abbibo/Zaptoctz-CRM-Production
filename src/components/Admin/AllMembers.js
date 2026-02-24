@@ -312,7 +312,7 @@ const AdminMembersDashboard = () => {
   return (
     <div className="p-6 bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white min-h-screen font-sans">
       <h1 className="text-4xl font-extrabold text-center mb-8 text-gray-100 tracking-wide">
-        Admin Members Dashboard
+        Admin Agents Dashboard
       </h1>
 
       {/* Success and Error Messages */}
@@ -333,7 +333,7 @@ const AdminMembersDashboard = () => {
           onClick={() => setSelectedMember(null)}
           className="mb-6 bg-red-600 px-6 py-2 rounded shadow-md hover:bg-red-700 transition font-bold"
         >
-          Back to All Members
+          Back to All Agents
         </button>
       )}
 
@@ -347,7 +347,8 @@ const AdminMembersDashboard = () => {
               onClick={() => fetchLeads(member.id)}
             >
               <h2 className="text-2xl font-bold mb-2 text-gray-100">{member.name}</h2>
-              <p className="text-sm text-gray-400">{member.email}</p>
+              <p className="text-sm text-gray-400">Email: {member.email}</p>
+              <p className="text-sm text-gray-400">Password: {member.password}</p>
               {member.role && (
                 <p className="mt-1 text-xs text-gray-500 uppercase font-bold">
                   {member.role}
@@ -508,7 +509,7 @@ const AdminMembersDashboard = () => {
                 onChange={(e) => setReassignTo(e.target.value)}
                 className="w-full p-3 bg-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">-- Select Member --</option>
+                <option value="">-- Select Agent --</option>
                 {members.map((member) => (
                   <option key={member.id} value={member.id}>
                     {member.name}

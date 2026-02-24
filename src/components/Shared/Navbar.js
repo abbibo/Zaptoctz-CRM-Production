@@ -58,7 +58,7 @@ const Navbar = () => {
                                                 to="/admin-dashboard/add-member"
                                                 className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-semibold transition"
                                             >
-                                                Add Member
+                                                Add Agent
                                             </Link>
                                             <Link
                                                 to="/admin-dashboard/assign-leads"
@@ -87,7 +87,7 @@ const Navbar = () => {
                                                 to="/manager/members"
                                                 className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-semibold transition"
                                             >
-                                                Members
+                                                Agents
                                             </Link>
                                             <Link
                                                 to="/manager/assign-leads"
@@ -244,7 +244,7 @@ const Navbar = () => {
                                             onClick={closeMobileMenu}
                                             className="block text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-semibold transition"
                                         >
-                                            Add Member
+                                            Add Agent
                                         </Link>
                                         <Link
                                             to="/admin-dashboard/assign-leads"
@@ -276,7 +276,7 @@ const Navbar = () => {
                                             onClick={closeMobileMenu}
                                             className="block text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-semibold transition"
                                         >
-                                            Members
+                                            Agents
                                         </Link>
                                         <Link
                                             to="/manager/assign-leads"

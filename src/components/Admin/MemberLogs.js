@@ -180,7 +180,7 @@ const MemberLogs = () => {
       {/* Header */}
       <header className="mb-8 text-center">
         <h1 className="text-3xl sm:text-4xl font-bold tracking-wide text-gray-100">
-          Member Logs
+          Agent Logs
         </h1>
       </header>
 
@@ -189,7 +189,7 @@ const MemberLogs = () => {
         {/* Member Filter */}
         <div className="flex flex-col w-full md:w-1/2">
           <label htmlFor="member" className="text-gray-300 mb-2 font-semibold">
-            Filter by Member
+            Filter by Agent
           </label>
           <select
             id="member"
@@ -197,7 +197,7 @@ const MemberLogs = () => {
             value={selectedMember}
             onChange={(e) => setSelectedMember(e.target.value)}
           >
-            <option value="">-- All Members --</option>
+            <option value="">-- All Agents --</option>
             {Object.entries(members).map(([id, name]) => (
               <option key={id} value={id}>
                 {name}

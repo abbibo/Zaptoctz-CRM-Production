@@ -331,7 +331,7 @@ const AllLeads = () => {
                   value={bulkAssignMember}
                   onChange={(e) => setBulkAssignMember(e.target.value)}
                 >
-                  <option value="">-- Select Member --</option>
+                  <option value="">-- Select Agent --</option>
                   {members.map((member) => (
                     <option key={member.id} value={member.id}>
                       {member.name}
@@ -529,7 +529,7 @@ const AllLeads = () => {
                   onChange={(e) => setNewAssignedTo(e.target.value)}
                   className="w-full p-2 bg-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">-- Select Member --</option>
+                  <option value="">-- Select Agent --</option>
                   {members.map((member) => (
                     <option key={member.id} value={member.id}>
                       {member.name}

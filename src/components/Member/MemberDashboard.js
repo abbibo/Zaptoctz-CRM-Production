@@ -361,7 +361,7 @@ const MemberDashboard = () => {
           text: notes || "",
           status,
           date: new Date().toISOString(),
-          updatedBy: memberData?.name || "Member",
+          updatedBy: memberData?.name || "Agent",
           followUpDate:
             ["Interested", "Requested Call Back"].includes(status) ? followUpDate : null,
           followUpTime:
@@ -402,7 +402,7 @@ const MemberDashboard = () => {
   // Generate Daily Work Report
   const generateDailyReport = () => {
     if (!memberData) {
-      alert("Member data not available.");
+      alert("Agent data not available.");
       return;
     }
     const currentDate = new Date();
@@ -620,7 +620,7 @@ const MemberDashboard = () => {
       )}
 
       <h1 className="text-3xl sm:text-4xl font-extrabold mb-6 text-center tracking-wider text-gray-100">
-        Member Dashboard
+        Agent Dashboard
       </h1>
 
       {/* Search Bar and Generate Report Button */}

@@ -87,7 +87,7 @@ const AssignMembersToManager = () => {
     <div className="p-6 bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white min-h-screen font-sans">
       <div className="max-w-lg mx-auto">
         <h1 className="text-3xl font-extrabold mb-6 text-center tracking-wider text-gray-100">
-          Assign Members to Manager
+          Assign Agents to Manager
         </h1>
         {success && <p className="text-green-500 mb-4 text-center font-bold">Members assigned successfully!</p>}
         {error && <p className="text-red-500 mb-4 text-center font-bold">{error}</p>}
@@ -115,7 +115,7 @@ const AssignMembersToManager = () => {
             selectedManager && (
               <>
                 <div>
-                  <label className="block mb-2 text-gray-400 font-bold">Members</label>
+                  <label className="block mb-2 text-gray-400 font-bold">Agents</label>
                   <p className="text-sm text-gray-400 mb-2">
                     Check the members you want to assign. Uncheck any currently assigned members you want to remove.
                   </p>
@@ -152,7 +152,7 @@ const AssignMembersToManager = () => {
                   onClick={handleAssign}
                   disabled={!selectedManager}
                 >
-                  Assign Members
+                  Assign Agents
                 </button>
               </>
             )

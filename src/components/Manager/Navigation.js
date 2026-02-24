@@ -21,7 +21,7 @@ const Navigation = () => {
             location.pathname === "/manager/members" ? "bg-blue-600" : "bg-gray-700"
           }`}
         >
-          Members
+          Agents
         </Link>
         <Link
           to="/manager/assign-leads"

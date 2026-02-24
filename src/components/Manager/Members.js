@@ -413,7 +413,7 @@ const Members = () => {
   return (
     <div className="p-6 bg-gray-900 text-white min-h-screen">
       <h1 className="text-4xl font-bold text-center mb-8">
-        Members Dashboard
+        Agents Dashboard
       </h1>
 
       {selectedMember && (
@@ -421,7 +421,7 @@ const Members = () => {
           onClick={() => setSelectedMember(null)}
           className="mb-6 bg-red-600 px-6 py-2 rounded-lg shadow-md hover:bg-red-700 transition"
         >
-          Back to Members
+          Back to Agents
         </button>
       )}
 
@@ -632,7 +632,7 @@ const Members = () => {
                     onChange={(e) => setReassignTo(e.target.value)}
                     className="w-full p-3 bg-gray-700 rounded"
                   >
-                    <option value="">-- Select Member --</option>
+                    <option value="">-- Select Agent --</option>
                     {members
                       .filter((member) => member.id !== selectedLead.assignedTo)
                       .map((member) => (
@@ -687,7 +687,7 @@ const Members = () => {
                     onChange={(e) => setBulkReassignTo(e.target.value)}
                     className="w-full p-3 bg-gray-700 rounded"
                   >
-                    <option value="">-- Select Member --</option>
+                    <option value="">-- Select Agent --</option>
                     {members.map((member) => (
                       <option key={member.id} value={member.id}>
                         {member.name}

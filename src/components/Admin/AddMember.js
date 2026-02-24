@@ -133,11 +133,11 @@ const AddMember = () => {
   return (
     <div className="p-4 bg-gray-900 text-white min-h-screen font-sans">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-extrabold mb-6 text-center">Add Member</h1>
+        <h1 className="text-2xl font-extrabold mb-6 text-center">Add Agent</h1>
         {success && !editMode && <p className="text-green-500 mb-4 text-center">Operation successful!</p>}
         {error && !editMode && <p className="text-red-500 mb-4 text-center">{error}</p>}
 
-        {/* Add Member Form */}
+        {/* Add Agent Form */}
         {!editMode && (
           <form onSubmit={handleAddMember} className="space-y-4">
             <input
@@ -160,7 +160,7 @@ const AddMember = () => {
               onChange={(e) => setRole(e.target.value)}
               className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="member">Member</option>
+              <option value="member">Agent</option>
               <option value="manager">Manager</option>
               <option value="admin">Admin</option>
             </select>
@@ -199,12 +199,12 @@ const AddMember = () => {
               type="submit"
               className="p-3 bg-blue-500 hover:bg-blue-600 rounded w-full font-bold transition"
             >
-              Add Member
+              Add Agent
             </button>
           </form>
         )}
 
-        <h2 className="text-xl font-extrabold mt-10 mb-4">All Members</h2>
+        <h2 className="text-xl font-extrabold mt-10 mb-4">All Agents</h2>
         <div className="overflow-x-auto bg-gray-800 rounded shadow-lg border border-gray-700">
           <table className="min-w-full divide-y divide-gray-700">
             <thead>
@@ -280,7 +280,7 @@ const AddMember = () => {
                 onChange={(e) => setRole(e.target.value)}
                 className="w-full p-3 bg-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="member">Member</option>
+                <option value="member">Agent</option>
                 <option value="manager">Manager</option>
                 <option value="admin">Admin</option>
               </select>
