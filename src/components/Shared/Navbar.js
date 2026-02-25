@@ -119,6 +119,18 @@ const Navbar = () => {
                                 </>
                             )}
 
+                            {/* ACE Link */}
+                            {(role === "manager" || role === "member") && (
+                                <a
+                                    href="https://frontend-tau-six-16.vercel.app/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-white font-bold text-sm px-3 py-1.5 rounded-md bg-indigo-600 hover:bg-indigo-500 transition tracking-widest"
+                                >
+                                    ACE
+                                </a>
+                            )}
+
                             {/* Profile Dropdown */}
                             {user && (
                                 <div className="relative ml-3">
@@ -319,6 +331,19 @@ const Navbar = () => {
                                     </>
                                 )}
                             </>
+                        )}
+
+                        {/* ACE Link - Mobile */}
+                        {(role === "manager" || role === "member") && (
+                            <a
+                                href="https://frontend-tau-six-16.vercel.app/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={closeMobileMenu}
+                                className="block w-full text-center bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded text-base font-bold text-white transition mt-4 tracking-widest"
+                            >
+                                ACE
+                            </a>
                         )}
 
                         <button
