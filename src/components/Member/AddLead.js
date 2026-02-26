@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ProcessingModal from "../Shared/ProcessingModal";
 import { db, auth } from "../../context/FirebaseContext";
 import { collection, addDoc, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import { parseImportData, parsePasteData, cleanPhoneNumber } from "../../utils/fileImport";
@@ -9,7 +10,6 @@ const AddLead = () => {
   const [userName, setUserName] = useState("");
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  const [existingLead, setExistingLead] = useState(null);
   const [dateAssigned, setDateAssigned] = useState(new Date().toISOString().split("T")[0]);
 
   // Import States
@@ -20,6 +20,9 @@ const AddLead = () => {
   const [csvLoading, setCsvLoading] = useState(false);
   const [csvError, setCsvError] = useState("");
   const [csvSuccess, setCsvSuccess] = useState("");
+
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processMessage, setProcessMessage] = useState("");
 
   useEffect(() => {
     const fetchUserName = async () => {
@@ -39,11 +42,6 @@ const AddLead = () => {
     fetchUserName();
   }, []);
 
-  const formatDate = () => {
-    const today = new Date();
-    return today.toISOString().split("T")[0];
-  };
-
   const checkDuplicateLead = async (phone) => {
     const leadsRef = collection(db, "leads");
     const q = query(leadsRef, where("phone", "==", phone));
@@ -60,7 +58,6 @@ const AddLead = () => {
     e.preventDefault();
     setError("");
     setSuccess(false);
-    setExistingLead(null);
 
     if (!leadName || !phone || !dateAssigned) {
       setError("Please fill in all fields.");
@@ -74,10 +71,12 @@ const AddLead = () => {
       return;
     }
 
+    setIsProcessing(true);
+    setProcessMessage("Adding lead...");
+
     try {
       const { exists, lead } = await checkDuplicateLead(phoneCleaned);
       if (exists) {
-        setExistingLead(lead);
         setError(`This lead already exists and is assigned to ${lead.assignedToName || 'Unknown'}.`);
         return;
       }
@@ -106,6 +105,8 @@ const AddLead = () => {
     } catch (err) {
       console.error("Error adding lead:", err);
       setError("Failed to add lead. Please try again.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -194,6 +195,9 @@ const AddLead = () => {
       return;
     }
 
+    setIsProcessing(true);
+    setProcessMessage("Adding CSV leads...");
+
     try {
       const leadsCollection = collection(db, "leads");
 
@@ -228,6 +232,8 @@ const AddLead = () => {
     } catch (err) {
       console.error("Error adding CSV leads:", err);
       setCsvError("Failed to add CSV leads. Please try again.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -407,6 +413,7 @@ const AddLead = () => {
           )}
         </div>
       </div>
+      <ProcessingModal isOpen={isProcessing} message={processMessage} />
     </div>
   );
 };

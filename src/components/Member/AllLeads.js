@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ProcessingModal from "../Shared/ProcessingModal";
 import { db, auth } from "../../context/FirebaseContext";
 import { collection, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
 import { format, addDays, isBefore, isSameDay } from "date-fns";
@@ -18,6 +19,8 @@ const AllLeads = () => {
   const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [previewMessage, setPreviewMessage] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processMessage, setProcessMessage] = useState("");
   const today = format(new Date(), "yyyy-MM-dd");
 
   useEffect(() => {
@@ -90,6 +93,9 @@ const AllLeads = () => {
       return;
     }
 
+    setIsProcessing(true);
+    setProcessMessage("Updating status...");
+
     try {
       const leadRef = doc(db, "leads", selectedLead.id);
       const newNotes = [
@@ -125,6 +131,8 @@ const AllLeads = () => {
     } catch (err) {
       console.error("Error updating status:", err);
       alert("Failed to update status.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -340,6 +348,8 @@ const AllLeads = () => {
           </div>
         </div>
       )}
+      
+      <ProcessingModal isOpen={isProcessing} message={processMessage} />
     </div>
   );
 };

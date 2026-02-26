@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import ProcessingModal from "./ProcessingModal";
 import { db } from "../../context/FirebaseContext";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 
@@ -21,6 +22,8 @@ const DocumentationForm = () => {
   const [docData, setDocData] = useState(null);
   const [formData, setFormData] = useState({});
   const [message, setMessage] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processMessage, setProcessMessage] = useState("");
 
   useEffect(() => {
     const fetchDoc = async () => {
@@ -55,6 +58,8 @@ const DocumentationForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
+    setIsProcessing(true);
+    setProcessMessage("Saving documentation...");
     setMessage("");
     try {
       const docRef = doc(db, "documentation", docId);
@@ -65,6 +70,7 @@ const DocumentationForm = () => {
       setMessage("Error saving form. Please try again.");
     } finally {
       setSaving(false);
+      setIsProcessing(false);
     }
   };
 
@@ -186,6 +192,7 @@ const DocumentationForm = () => {
 
         </form>
       </div>
+      <ProcessingModal isOpen={isProcessing} message={processMessage} />
     </div>
   );
 };

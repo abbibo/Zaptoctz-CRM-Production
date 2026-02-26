@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Confetti from "react-confetti";
+import ProcessingModal from "../Shared/ProcessingModal";
 import { db, auth } from "../../context/FirebaseContext";
 import {
   collection,
@@ -131,6 +132,9 @@ const MemberDashboard = () => {
   const [showMoodPopup, setShowMoodPopup] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackText, setFeedbackText] = useState("");
+
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processMessage, setProcessMessage] = useState("");
 
   // Log events to Firestore "logs" collection
   const logEvent = async (eventType, eventData = {}) => {
@@ -285,6 +289,8 @@ const MemberDashboard = () => {
   const handleDocumentation = async (e, lead) => {
     e.stopPropagation();
     if (window.confirm("Do you want to start the documentation process?")) {
+      setIsProcessing(true);
+      setProcessMessage("Starting documentation process...");
       try {
         const docRef = doc(db, "documentation", lead.id);
         const docSnap = await getDoc(docRef);
@@ -304,6 +310,8 @@ const MemberDashboard = () => {
       } catch (err) {
         console.error("Error creating documentation: ", err);
         alert("Failed to start documentation process.");
+      } finally {
+        setIsProcessing(false);
       }
     }
   };
@@ -379,6 +387,9 @@ const MemberDashboard = () => {
       return;
     }
 
+    setIsProcessing(true);
+    setProcessMessage("Updating lead status...");
+
     try {
       const leadRef = doc(db, "leads", selectedLead.id);
       const newNotes = [
@@ -422,6 +433,8 @@ const MemberDashboard = () => {
     } catch (err) {
       console.error("Error updating status:", err);
       setStatusUpdateError("Failed to update status.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -597,10 +610,18 @@ const MemberDashboard = () => {
       alert("Feedback is required. Please enter your feedback or click Skip.");
       return;
     }
-    await logEvent("FeedbackSubmitted", { feedback: feedbackText });
-    localStorage.setItem(`feedbackGiven_${today}`, "true");
-    setFeedbackText("");
-    setShowFeedbackModal(false);
+    setIsProcessing(true);
+    setProcessMessage("Submitting feedback...");
+    try {
+      await logEvent("FeedbackSubmitted", { feedback: feedbackText });
+      localStorage.setItem(`feedbackGiven_${today}`, "true");
+      setFeedbackText("");
+      setShowFeedbackModal(false);
+    } catch (err) {
+      console.error("Error submitting feedback:", err);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleFeedbackSkip = () => {
@@ -1273,6 +1294,8 @@ const MemberDashboard = () => {
           </div>
         </div>
       )}
+
+      <ProcessingModal isOpen={isProcessing} message={processMessage} />
     </div>
   );
 };

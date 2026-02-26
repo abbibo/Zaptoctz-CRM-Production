@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ProcessingModal from "../Shared/ProcessingModal";
 import { db } from "../../context/FirebaseContext";
 import { collection, getDocs, addDoc, getDoc, doc, query, where } from "firebase/firestore";
 import { parseImportData, parsePasteData, cleanPhoneNumber } from "../../utils/fileImport";
@@ -18,7 +19,8 @@ const AssignLeads = () => {
   const [csvData, setCsvData] = useState([]);
   const [csvStatus, setCsvStatus] = useState([]);
   const [csvLoading, setCsvLoading] = useState(false);
-  const [assigningLoading, setAssigningLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processMessage, setProcessMessage] = useState("");
 
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -96,11 +98,15 @@ const AssignLeads = () => {
       return;
     }
 
+    setIsProcessing(true);
+    setProcessMessage("Assigning lead...");
+
     try {
       const { exists, lead } = await checkDuplicateLead(phoneCleaned);
       if (exists) {
         setExistingLead(lead);
         setError(`Lead already exists and is assigned to someone.`);
+        setIsProcessing(false);
         return;
       }
 
@@ -139,6 +145,8 @@ const AssignLeads = () => {
     } catch (err) {
       console.error("Error assigning lead:", err);
       setError("Failed to assign lead. Try again.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -237,20 +245,20 @@ const AssignLeads = () => {
   const handleAssignCsvLeads = async () => {
     setError("");
     setSuccess(false);
-    setAssigningLoading(true); // Show assigning leads animation
 
     if (!assignedTo || !dateAssigned) {
       setError("Please select an agent and date to assign the leads.");
-      setAssigningLoading(false);
       return;
     }
 
     const assignableLeads = csvStatus.filter((lead) => lead.status === "Available");
     if (assignableLeads.length === 0) {
       setError("No assignable leads found. All leads are already assigned, invalid or duplicates in CSV.");
-      setAssigningLoading(false);
       return;
     }
+
+    setIsProcessing(true);
+    setProcessMessage("Assigning leads...");
 
     try {
       const leadsCollection = collection(db, "leads");
@@ -283,7 +291,7 @@ const AssignLeads = () => {
       console.error("Error assigning CSV leads:", err);
       setError("Failed to assign leads. Try again.");
     } finally {
-      setAssigningLoading(false); // Stop assigning animation
+      setIsProcessing(false);
     }
   };
 
@@ -505,25 +513,20 @@ const AssignLeads = () => {
             </p>
           )}
 
-          {assigningLoading && (
-            <div className="text-center text-yellow-500 font-bold">Assigning leads... Please wait.</div>
-          )}
-
-          {!assigningLoading && (
-            <button
-              onClick={handleAssignCsvLeads}
-              disabled={csvData.length === 0}
-              className={`p-3 rounded w-full font-bold transition ${
-                csvData.length === 0
-                  ? "bg-gray-600 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-600"
-              }`}
-            >
-              Assign Leads
-            </button>
-          )}
+          <button
+            onClick={handleAssignCsvLeads}
+            disabled={csvData.length === 0}
+            className={`p-3 rounded w-full font-bold transition ${
+              csvData.length === 0
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600"
+            }`}
+          >
+            Assign Leads
+          </button>
         </div>
       </div>
+      <ProcessingModal isOpen={isProcessing} message={processMessage} />
     </div>
   );
 };

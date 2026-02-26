@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ProcessingModal from "../Shared/ProcessingModal";
 import { db } from "../../context/FirebaseContext";
 import { collection, getDocs, addDoc, query, where, getDoc, doc } from "firebase/firestore";
 import { parseImportData, parsePasteData, cleanPhoneNumber } from "../../utils/fileImport";
@@ -16,6 +17,8 @@ const AssignLeads = () => {
   const [csvData, setCsvData] = useState([]);
   const [csvStatus, setCsvStatus] = useState([]);
   const [csvLoading, setCsvLoading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processMessage, setProcessMessage] = useState("");
 
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -77,10 +80,14 @@ const AssignLeads = () => {
       return;
     }
 
+    setIsProcessing(true);
+    setProcessMessage("Assigning lead...");
+
     try {
       const { exists, lead } = await checkDuplicateLead(phoneCleaned);
       if (exists) {
         setError(`Lead already exists and is assigned to ${lead.assignedToName}.`);
+        setIsProcessing(false);
         return;
       }
 
@@ -107,6 +114,8 @@ const AssignLeads = () => {
     } catch (err) {
       console.error("Error assigning lead:", err);
       setError("Failed to assign lead. Try again.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -213,6 +222,9 @@ const AssignLeads = () => {
       return;
     }
 
+    setIsProcessing(true);
+    setProcessMessage("Assigning leads...");
+
     try {
       const leadsCollection = collection(db, "leads");
 
@@ -243,6 +255,8 @@ const AssignLeads = () => {
     } catch (err) {
       console.error("Error assigning CSV leads:", err);
       setError("Failed to assign leads. Try again.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -448,6 +462,7 @@ const AssignLeads = () => {
           )}
         </div>
       </div>
+      <ProcessingModal isOpen={isProcessing} message={processMessage} />
     </div>
   );
 };
