@@ -619,7 +619,7 @@ const MemberDashboard = () => {
         </div>
       )}
 
-      <h1 className="text-3xl sm:text-4xl font-extrabold mb-6 text-center tracking-wider text-gray-100">
+      <h1 className="text-xl sm:text-2xl font-extrabold mb-4 text-center tracking-wider text-gray-100">
         Agent Dashboard
       </h1>
 
@@ -645,8 +645,8 @@ const MemberDashboard = () => {
       </div>
 
       {/* KPI Section */}
-      <div className="mb-8">
-        <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 overflow-x-auto sm:overflow-x-visible">
+      <div className="mb-5">
+        <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 overflow-x-auto sm:overflow-x-visible">
           {["All", "Contacted", "Pending", "Follow-Up"].map((kpi) => {
             let count = 0;
             const leadsExcludingBulk = leads.filter(
@@ -690,15 +690,15 @@ const MemberDashboard = () => {
             return (
               <div
                 key={kpi}
-                className={`flex-shrink-0 sm:flex-shrink sm:flex-grow cursor-pointer p-4 sm:p-6 rounded-lg shadow-lg text-center border border-gray-700 transform hover:scale-105 transition ${
+                className={`flex-shrink-0 sm:flex-shrink sm:flex-grow cursor-pointer p-2 sm:p-3 rounded-lg shadow text-center border border-gray-700 transition ${
                   isActive ? "bg-blue-600" : "bg-gray-800 hover:bg-gray-700"
-                } min-w-[150px] sm:min-w-0`}
+                } min-w-[110px] sm:min-w-0`}
                 onClick={() => filterLeadsByKpi(kpi)}
               >
-                <p className="text-md sm:text-lg font-bold text-white">
+                <p className="text-xs sm:text-sm font-bold text-white">
                   {kpi} Leads
                 </p>
-                <p className="text-2xl sm:text-3xl font-extrabold text-white">
+                <p className="text-xl sm:text-2xl font-extrabold text-white">
                   {count}
                 </p>
               </div>
@@ -723,7 +723,7 @@ const MemberDashboard = () => {
       </div>
 
       {/* Leads Section */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {displayedLeads.length > 0 ? (
           displayedLeads.map((lead) => {
             let badgeContent = "";
@@ -769,17 +769,17 @@ const MemberDashboard = () => {
             return (
               <div
                 key={lead.id}
-                className="bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-700 cursor-pointer hover:shadow-2xl hover:bg-gray-700 transition relative"
+                className="bg-gray-800 p-3 rounded-lg shadow border border-gray-700 cursor-pointer hover:shadow-xl hover:bg-gray-700 transition relative"
                 onClick={() => openLeadDetails(lead)}
               >
-                <h2 className="text-lg sm:text-xl font-bold text-gray-100 mb-1">
+                <h2 className="text-base sm:text-lg font-bold text-gray-100 mb-0.5">
                   {lead.leadName}
                 </h2>
-                <p className="text-sm sm:text-md text-gray-400">
+                <p className="text-xs text-gray-400">
                   Assigned: {format(new Date(lead.dateAssigned), "dd-MM-yyyy")}
                 </p>
                 <span
-                  className={`absolute top-2 right-2 px-2 py-1 rounded text-xs sm:text-sm text-white ${badgeColor}`}
+                  className={`absolute top-2 right-2 px-1.5 py-0.5 rounded text-xs text-white ${badgeColor}`}
                 >
                   {badgeContent}
                 </span>

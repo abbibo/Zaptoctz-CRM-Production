@@ -315,8 +315,8 @@ const AdminMembersDashboard = () => {
   const agents = members.filter((m) => m.role !== "manager");
 
   return (
-    <div className="p-6 bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white min-h-screen font-sans">
-      <h1 className="text-4xl font-extrabold text-center mb-8 text-gray-100 tracking-wide">
+    <div className="p-4 sm:p-6 bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white min-h-screen font-sans">
+      <h1 className="text-2xl sm:text-3xl font-extrabold text-center mb-4 sm:mb-6 text-gray-100 tracking-wide">
         Admin Agents Dashboard
       </h1>
 
@@ -347,19 +347,19 @@ const AdminMembersDashboard = () => {
         <div className="space-y-8">
           {/* Managers Section */}
           <div>
-            <h2 className="text-2xl font-bold mb-4 text-gray-200 border-b border-gray-700 pb-2">Managers</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <h2 className="text-lg font-bold mb-3 text-gray-200 border-b border-gray-700 pb-2">Managers</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {managers.map((manager) => (
                 <div
                   key={manager.id}
-                  className="bg-gray-800 p-6 rounded shadow-lg hover:shadow-xl cursor-default transition flex flex-col justify-start items-start"
+                  className="bg-gray-800 p-3 sm:p-4 rounded shadow hover:shadow-xl cursor-default transition flex flex-col justify-start items-start border border-gray-700 hover:border-indigo-500"
                 >
                   <div className="w-full">
                     <div className="cursor-pointer" onClick={() => {
                         if (window.getSelection().toString().length > 0) return;
                         fetchLeads(manager.id);
                     }}>
-                      <h2 className="text-2xl font-bold mb-4 text-indigo-400">{manager.name}</h2>
+                      <h2 className="text-base font-semibold mb-1 text-indigo-400">{manager.name}</h2>
                     </div>
                     <div className="flex items-center justify-between w-full mb-2">
                       <p className="text-sm text-gray-400">Email: <span className="text-gray-300">{manager.email}</span></p>
@@ -442,12 +442,12 @@ const AdminMembersDashboard = () => {
 
           {/* Agents Section */}
           <div>
-            <h2 className="text-2xl font-bold mb-4 text-gray-200 border-b border-gray-700 pb-2 mt-8">Agents</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <h2 className="text-lg font-bold mb-3 text-gray-200 border-b border-gray-700 pb-2 mt-6">Agents</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {agents.map((agent) => (
                 <div
                   key={agent.id}
-                  className="bg-gray-800 p-6 rounded shadow-lg hover:shadow-xl transition flex flex-col justify-center items-start"
+                  className="bg-gray-800 p-3 sm:p-4 rounded shadow hover:shadow-xl transition flex flex-col justify-center items-start border border-gray-700 hover:border-indigo-500"
                 >
                   <div className="w-full">
                     <div
@@ -457,7 +457,7 @@ const AdminMembersDashboard = () => {
                         fetchLeads(agent.id);
                       }}
                     >
-                      <h2 className="text-2xl font-bold mb-4 text-gray-100">{agent.name}</h2>
+                      <h2 className="text-base font-semibold mb-1 text-gray-100">{agent.name}</h2>
                     </div>
                     <div className="flex items-center justify-between w-full mb-2">
                       <p className="text-sm text-gray-400">Email: <span className="text-gray-300 select-all">{agent.email}</span></p>
@@ -506,7 +506,7 @@ const AdminMembersDashboard = () => {
       {selectedMember && (
         <>
           {/* KPI Section */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-6 mt-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 mt-4">
             {[
               { label: "All", value: kpiData.total },
               { label: "Contacted", value: kpiData.contacted },
@@ -516,12 +516,12 @@ const AdminMembersDashboard = () => {
               <div
                 key={kpi.label}
                 onClick={() => filterLeads(leads, kpi.label)}
-                className={`p-6 rounded shadow-lg text-center cursor-pointer transition transform hover:scale-105 hover:bg-gray-700 ${
-                  activeKPI === kpi.label ? "bg-blue-600" : "bg-gray-800"
+                className={`p-3 sm:p-4 rounded shadow text-center cursor-pointer transition hover:bg-gray-700 border ${
+                  activeKPI === kpi.label ? "bg-blue-600 border-blue-400" : "bg-gray-800 border-gray-700"
                 }`}
               >
-                <p className="text-sm text-gray-100 font-bold uppercase">{kpi.label} Leads</p>
-                <p className="text-3xl font-extrabold text-white">{kpi.value}</p>
+                <p className="text-xs text-gray-100 font-bold uppercase">{kpi.label} Leads</p>
+                <p className="text-xl font-extrabold text-white">{kpi.value}</p>
               </div>
             ))}
           </div>

@@ -203,7 +203,7 @@ const AssignLeads = () => {
     setSuccess(false);
 
     if (!assignedTo || !dateAssigned) {
-      setError("Please select a member and date to assign the leads.");
+      setError("Please select an agent and date to assign the leads.");
       return;
     }
 

@@ -89,7 +89,7 @@ const AssignMembersToManager = () => {
         <h1 className="text-3xl font-extrabold mb-6 text-center tracking-wider text-gray-100">
           Assign Agents to Manager
         </h1>
-        {success && <p className="text-green-500 mb-4 text-center font-bold">Members assigned successfully!</p>}
+        {success && <p className="text-green-500 mb-4 text-center font-bold">Agents assigned successfully!</p>}
         {error && <p className="text-red-500 mb-4 text-center font-bold">{error}</p>}
 
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 space-y-4">
@@ -110,7 +110,7 @@ const AssignMembersToManager = () => {
           </div>
 
           {loadingAssigned ? (
-            <p className="text-gray-300">Loading assigned members...</p>
+            <p className="text-gray-300">Loading assigned agents...</p>
           ) : (
             selectedManager && (
               <>
@@ -162,10 +162,10 @@ const AssignMembersToManager = () => {
         {selectedManager && (
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700 mt-10">
             <h2 className="text-xl font-bold text-gray-100 border-b border-gray-700 pb-2 mb-4">
-              Currently Assigned Members
+              Currently Assigned Agents
             </h2>
             {assignedMembers.length === 0 ? (
-              <p className="text-gray-300">No members assigned yet.</p>
+              <p className="text-gray-300">No agents assigned yet.</p>
             ) : (
               <ul className="list-disc pl-6 text-gray-200 space-y-1">
                 {assignedMembers.map((memberId) => {

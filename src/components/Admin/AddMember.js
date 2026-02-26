@@ -245,7 +245,7 @@ const AddMember = () => {
               ))}
               {members.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="p-3 text-center text-gray-400">No members found.</td>
+                  <td colSpan="5" className="p-3 text-center text-gray-400">No agents found.</td>
                 </tr>
               )}
             </tbody>
@@ -257,7 +257,7 @@ const AddMember = () => {
       {editMode && (
         <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="relative w-full max-w-md bg-gray-800 p-6 rounded shadow-lg border border-gray-700">
-            <h2 className="text-xl font-extrabold mb-4 text-center">Edit Member</h2>
+            <h2 className="text-xl font-extrabold mb-4 text-center">Edit Agent</h2>
             {success && <p className="text-green-500 mb-4 text-center">Operation successful!</p>}
             {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
             <form onSubmit={handleUpdateMember} className="space-y-4">
@@ -318,7 +318,7 @@ const AddMember = () => {
                   type="submit"
                   className="w-full p-3 bg-blue-500 hover:bg-blue-600 rounded font-bold transition text-center"
                 >
-                  Update Member
+                  Update Agent
                 </button>
               </div>
             </form>

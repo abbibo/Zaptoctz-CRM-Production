@@ -51,98 +51,98 @@ const AdminDashboard = () => {
   }, []);
 
   return (
-    <div className="p-6 bg-gradient-to-br from-gray-900 via-black to-gray-900 min-h-screen text-white font-sans">
+    <div className="p-4 sm:p-6 bg-gradient-to-br from-gray-900 via-black to-gray-900 min-h-screen text-white font-sans">
       <div className="max-w-5xl mx-auto">
-        <header className="mb-8 text-center">
-          <h1 className="text-4xl font-extrabold text-gray-100 tracking-wide">
+        <header className="mb-4 sm:mb-6 text-center">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-100 tracking-wide">
             Admin Dashboard
           </h1>
         </header>
 
         {/* KPI Section */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6 mb-8">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center border border-gray-700 hover:bg-gray-700 transition transform hover:scale-105">
-            <p className="text-sm text-gray-400 font-bold uppercase tracking-wider mb-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 mb-4 sm:mb-6">
+          <div className="bg-gray-800 p-3 sm:p-4 rounded-lg shadow text-center border border-gray-700 hover:bg-gray-700 hover:border-indigo-500 transition duration-200">
+            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">
               Total Leads
             </p>
-            <p className="text-3xl font-extrabold text-gray-100">{kpi.totalLeads}</p>
+            <p className="text-xl font-extrabold text-gray-100">{kpi.totalLeads}</p>
           </div>
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center border border-gray-700 hover:bg-gray-700 transition transform hover:scale-105">
-            <p className="text-sm text-gray-400 font-bold uppercase tracking-wider mb-2">
+          <div className="bg-gray-800 p-3 sm:p-4 rounded-lg shadow text-center border border-gray-700 hover:bg-gray-700 hover:border-indigo-500 transition duration-200">
+            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">
               Contacted Leads
             </p>
-            <p className="text-3xl font-extrabold text-gray-100">{kpi.contacted}</p>
+            <p className="text-xl font-extrabold text-gray-100">{kpi.contacted}</p>
           </div>
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center border border-gray-700 hover:bg-gray-700 transition transform hover:scale-105">
-            <p className="text-sm text-gray-400 font-bold uppercase tracking-wider mb-2">
+          <div className="bg-gray-800 p-3 sm:p-4 rounded-lg shadow text-center border border-gray-700 hover:bg-gray-700 hover:border-indigo-500 transition duration-200">
+            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">
               Pending Leads
             </p>
-            <p className="text-3xl font-extrabold text-gray-100">{kpi.pending}</p>
+            <p className="text-xl font-extrabold text-gray-100">{kpi.pending}</p>
           </div>
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center border border-gray-700 hover:bg-gray-700 transition transform hover:scale-105">
-            <p className="text-sm text-gray-400 font-bold uppercase tracking-wider mb-2">
+          <div className="bg-gray-800 p-3 sm:p-4 rounded-lg shadow text-center border border-gray-700 hover:bg-gray-700 hover:border-indigo-500 transition duration-200">
+            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">
               Interested Leads
             </p>
-            <p className="text-3xl font-extrabold text-gray-100">{kpi.interested}</p>
+            <p className="text-xl font-extrabold text-gray-100">{kpi.interested}</p>
           </div>
-           <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center border border-gray-700 hover:bg-gray-700 transition transform hover:scale-105">
-            <p className="text-sm text-gray-400 font-bold uppercase tracking-wider mb-2">
+          <div className="bg-gray-800 p-3 sm:p-4 rounded-lg shadow text-center border border-gray-700 hover:bg-gray-700 hover:border-indigo-500 transition duration-200">
+            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">
               Total Agents
             </p>
-            <p className="text-3xl font-extrabold text-gray-100">{kpi.totalMembers}</p>
+            <p className="text-xl font-extrabold text-gray-100">{kpi.totalMembers}</p>
           </div>
-           <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center border border-gray-700 hover:bg-gray-700 transition transform hover:scale-105">
-            <p className="text-sm text-gray-400 font-bold uppercase tracking-wider mb-2">
-              Active Members
+          <div className="bg-gray-800 p-3 sm:p-4 rounded-lg shadow text-center border border-gray-700 hover:bg-gray-700 hover:border-indigo-500 transition duration-200">
+            <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">
+              Active Agents
             </p>
-            <p className="text-3xl font-extrabold text-gray-100">{kpi.activeMembers}</p>
+            <p className="text-xl font-extrabold text-gray-100">{kpi.activeMembers}</p>
           </div>
           <ManagerCountWidget />
         </div>
 
         {/* Navigation Links */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           <Link
             to="/admin-dashboard/add-member"
-            className="block p-6 bg-gray-800 rounded-lg shadow-lg border border-gray-700 hover:shadow-2xl hover:bg-gray-700 transition transform hover:scale-105 text-center"
+            className="block p-3 sm:p-4 bg-gray-800 rounded-lg shadow border border-gray-700 hover:bg-gray-700 hover:border-indigo-500 transition duration-200 text-center cursor-pointer"
           >
-            <p className="text-lg font-bold text-gray-100">Add Agent</p>
+            <p className="text-sm font-semibold text-gray-100">Add Agent</p>
           </Link>
           <Link
             to="/admin-dashboard/assign-leads"
-            className="block p-6 bg-gray-800 rounded-lg shadow-lg border border-gray-700 hover:shadow-2xl hover:bg-gray-700 transition transform hover:scale-105 text-center"
+            className="block p-3 sm:p-4 bg-gray-800 rounded-lg shadow border border-gray-700 hover:bg-gray-700 hover:border-indigo-500 transition duration-200 text-center cursor-pointer"
           >
-            <p className="text-lg font-bold text-gray-100">Assign Leads</p>
+            <p className="text-sm font-semibold text-gray-100">Assign Leads</p>
           </Link>
           <Link
             to="/admin-dashboard/add-template"
-            className="block p-6 bg-gray-800 rounded-lg shadow-lg border border-gray-700 hover:shadow-2xl hover:bg-gray-700 transition transform hover:scale-105 text-center"
+            className="block p-3 sm:p-4 bg-gray-800 rounded-lg shadow border border-gray-700 hover:bg-gray-700 hover:border-indigo-500 transition duration-200 text-center cursor-pointer"
           >
-            <p className="text-lg font-bold text-gray-100">Add WhatsApp Template</p>
+            <p className="text-sm font-semibold text-gray-100">WhatsApp Template</p>
           </Link>
           <Link
             to="/admin-dashboard/assign-members-to-manager"
-            className="block p-6 bg-gray-800 rounded-lg shadow-lg border border-gray-700 hover:shadow-2xl hover:bg-gray-700 transition transform hover:scale-105 text-center"
+            className="block p-3 sm:p-4 bg-gray-800 rounded-lg shadow border border-gray-700 hover:bg-gray-700 hover:border-indigo-500 transition duration-200 text-center cursor-pointer"
           >
-            <p className="text-lg font-bold text-gray-100">Assign Agents to Manager</p>
+            <p className="text-sm font-semibold text-gray-100">Assign Agents</p>
           </Link>
           <Link
             to="/admin-dashboard/all-leads"
-            className="block p-6 bg-gray-800 rounded-lg shadow-lg border border-gray-700 hover:shadow-2xl hover:bg-gray-700 transition transform hover:scale-105 text-center"
+            className="block p-3 sm:p-4 bg-gray-800 rounded-lg shadow border border-gray-700 hover:bg-gray-700 hover:border-indigo-500 transition duration-200 text-center cursor-pointer"
           >
-            <p className="text-lg font-bold text-gray-100">All Leads</p>
+            <p className="text-sm font-semibold text-gray-100">All Leads</p>
           </Link>
           <Link
             to="/admin-dashboard/all-members"
-            className="block p-6 bg-gray-800 rounded-lg shadow-lg border border-gray-700 hover:shadow-2xl hover:bg-gray-700 transition transform hover:scale-105 text-center"
+            className="block p-3 sm:p-4 bg-gray-800 rounded-lg shadow border border-gray-700 hover:bg-gray-700 hover:border-indigo-500 transition duration-200 text-center cursor-pointer"
           >
-            <p className="text-lg font-bold text-gray-100">All Agents</p>
+            <p className="text-sm font-semibold text-gray-100">All Agents</p>
           </Link>
           <Link
             to="/admin-dashboard/logs"
-            className="block p-6 bg-gray-800 rounded-lg shadow-lg border border-gray-700 hover:shadow-2xl hover:bg-gray-700 transition transform hover:scale-105 text-center"
+            className="block p-3 sm:p-4 bg-gray-800 rounded-lg shadow border border-gray-700 hover:bg-gray-700 hover:border-indigo-500 transition duration-200 text-center cursor-pointer"
           >
-            <p className="text-lg font-bold text-gray-100">Logs</p>
+            <p className="text-sm font-semibold text-gray-100">Logs</p>
           </Link>
         </div>
       </div>

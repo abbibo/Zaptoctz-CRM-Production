@@ -543,24 +543,24 @@ const ManagerDashboard = () => {
 
       <main className="p-4 sm:p-6">
         {/* KPI Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mb-4 sm:mb-6">
           {[
             { label: "Total Leads", value: kpiData.total, key: "All" },
-            { label: "Contacted Leads", value: kpiData.contacted, key: "Contacted" },
-            { label: "Pending Leads", value: kpiData.pending, key: "Pending" },
-            { label: "Interested Leads", value: kpiData.interested, key: "Interested" },
-            { label: "Duplicated Leads", value: kpiData.duplicated || 0, key: "Duplicated" },
-            { label: "Requested Call Back", value: kpiData.followUp || 0, key: "FollowUp" },
+            { label: "Contacted", value: kpiData.contacted, key: "Contacted" },
+            { label: "Pending", value: kpiData.pending, key: "Pending" },
+            { label: "Interested", value: kpiData.interested, key: "Interested" },
+            { label: "Duplicated", value: kpiData.duplicated || 0, key: "Duplicated" },
+            { label: "Call Back", value: kpiData.followUp || 0, key: "FollowUp" },
           ].map((kpi) => (
             <div
               key={kpi.key}
-              className={`bg-gradient-to-r from-blue-500 to-blue-700 p-4 rounded-lg shadow-lg text-center cursor-pointer transform hover:scale-105 transition border ${
+              className={`bg-gradient-to-r from-blue-500 to-blue-700 p-3 rounded-lg shadow text-center cursor-pointer transition border ${
                 selectedKpi === kpi.key ? "border-2 border-white" : "border-transparent"
               }`}
               onClick={() => filterLeadsByKPI(kpi.key)}
             >
-              <p className="text-sm font-bold">{kpi.label}</p>
-              <p className="text-xl font-extrabold">{kpi.value}</p>
+              <p className="text-xs font-bold">{kpi.label}</p>
+              <p className="text-lg font-extrabold">{kpi.value}</p>
             </div>
           ))}
         </div>

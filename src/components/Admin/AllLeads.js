@@ -164,7 +164,7 @@ const AllLeads = () => {
 
   const handleBulkAssign = async () => {
     if (!bulkAssignMember || !bulkAssignDate) {
-      setErrorMessage("Please select a member and date for bulk assignment.");
+      setErrorMessage("Please select an agent and date for bulk assignment.");
       return;
     }
 
@@ -523,7 +523,7 @@ const AllLeads = () => {
               {/* Reassign Section */}
               <h3 className="text-lg mb-4 font-bold text-gray-100">Reassign Lead</h3>
               <div className="mb-4">
-                <label className="block mb-2 text-gray-300">Assign to Member</label>
+                <label className="block mb-2 text-gray-300">Assign to Agent</label>
                 <select
                   value={newAssignedTo}
                   onChange={(e) => setNewAssignedTo(e.target.value)}

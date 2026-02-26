@@ -158,7 +158,7 @@ const Members = () => {
       filterLeads(leadsData, "Pending");
     } catch (error) {
       console.error("Error fetching leads:", error);
-      setErrorMessage("Failed to fetch leads for the selected member.");
+      setErrorMessage("Failed to fetch leads for the selected agent.");
     }
   };
 
@@ -287,7 +287,7 @@ const Members = () => {
 
   const handleReassignLead = async () => {
     if (!reassignTo || !reassignDate) {
-      setErrorMessage("Please select a member and provide an assignment date.");
+      setErrorMessage("Please select an agent and provide an assignment date.");
       return;
     }
 
@@ -339,7 +339,7 @@ const Members = () => {
 
   const handleBulkReassign = async () => {
     if (!bulkReassignTo || !bulkReassignDate) {
-      setErrorMessage("Please select a member and provide an assignment date.");
+      setErrorMessage("Please select an agent and provide an assignment date.");
       return;
     }
 

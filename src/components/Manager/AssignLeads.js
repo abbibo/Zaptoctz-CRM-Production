@@ -240,7 +240,7 @@ const AssignLeads = () => {
     setAssigningLoading(true); // Show assigning leads animation
 
     if (!assignedTo || !dateAssigned) {
-      setError("Please select a member and date to assign the leads.");
+      setError("Please select an agent and date to assign the leads.");
       setAssigningLoading(false);
       return;
     }
