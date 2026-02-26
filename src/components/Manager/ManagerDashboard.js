@@ -6,7 +6,9 @@ import {
   deleteDoc,
   doc,
   updateDoc,
-  arrayUnion
+  arrayUnion,
+  getDoc,
+  setDoc
 } from "firebase/firestore";
 
 // Custom hook to detect mobile devices (using 640px as breakpoint)
@@ -235,19 +237,37 @@ const ManagerDashboard = () => {
   const openLeadDetails = (lead) => setSelectedLead(lead);
   const closeLeadDetails = () => setSelectedLead(null);
 
+  const handleDocumentation = async (e, lead) => {
+    e.stopPropagation();
+    if (window.confirm("Do you want to start the documentation process?")) {
+      try {
+        const docRef = doc(db, "documentation", lead.id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+           alert("Documentation already started for this lead.");
+           return;
+        }
+        await setDoc(docRef, {
+           docId: lead.id,
+           originalLeadId: lead.id,
+           leadName: lead.leadName || "",
+           phone: lead.phone || "",
+           assignedTo: lead.assignedTo || "",
+           dateAdded: new Date().toISOString()
+        });
+        alert("Lead copied to Documentation successfully!");
+      } catch (err) {
+        console.error("Error creating documentation: ", err);
+        alert("Failed to start documentation process.");
+      }
+    }
+  };
+
   const handleSelectLead = (id) => {
     if (selectedLeads.includes(id)) {
       setSelectedLeads(selectedLeads.filter((leadId) => leadId !== id));
     } else {
       setSelectedLeads([...selectedLeads, id]);
-    }
-  };
-
-  const handleSelectAll = () => {
-    if (selectedLeads.length === filteredLeads.length) {
-      setSelectedLeads([]);
-    } else {
-      setSelectedLeads(filteredLeads.map((lead) => lead.id));
     }
   };
 
@@ -589,6 +609,7 @@ const ManagerDashboard = () => {
                   <th className="p-3 text-left uppercase text-xs font-bold text-gray-300">Assigned To</th>
                   <th className="p-3 text-left uppercase text-xs font-bold text-gray-300">Updated Date</th>
                   <th className="p-3 text-left uppercase text-xs font-bold text-gray-300">Follow Up</th>
+                  <th className="p-3 text-left uppercase text-xs font-bold text-gray-300">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -610,11 +631,19 @@ const ManagerDashboard = () => {
                         : formatToCustomDateTime(lead.dateAssigned)}
                     </td>
                     <td className="p-3 text-xs">{formatFollowUpDateTime(lead)}</td>
+                    <td className="p-3 text-xs">
+                        <button
+                           onClick={(e) => handleDocumentation(e, lead)}
+                           className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-2 rounded shadow transition"
+                        >
+                           Documentation
+                        </button>
+                    </td>
                   </tr>
                 ))}
                 {filteredLeads.length === 0 && (
                   <tr>
-                    <td colSpan="6" className="p-4 text-center text-gray-400">
+                    <td colSpan="7" className="p-4 text-center text-gray-400">
                       No leads found.
                     </td>
                   </tr>
@@ -663,6 +692,7 @@ const ManagerDashboard = () => {
                             <th className="p-3 uppercase text-xs font-bold text-gray-300">Assigned To</th>
                             <th className="p-3 uppercase text-xs font-bold text-gray-300">Assigned Date</th>
                             <th className="p-3 uppercase text-xs font-bold text-gray-300">Follow Up</th>
+                            <th className="p-3 uppercase text-xs font-bold text-gray-300">Actions</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -687,6 +717,14 @@ const ManagerDashboard = () => {
                               <td className="p-3 text-xs">{membersMap[lead.assignedTo] || "Unassigned"}</td>
                               <td className="p-3 text-xs">{formatToCustomDateTime(lead.dateAssigned)}</td>
                               <td className="p-3 text-xs">{formatFollowUpDateTime(lead)}</td>
+                              <td className="p-3 text-xs">
+                                  <button
+                                     onClick={(e) => handleDocumentation(e, lead)}
+                                     className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-2 rounded shadow transition"
+                                  >
+                                     Documentation
+                                  </button>
+                              </td>
                             </tr>
                           ))}
                         </tbody>

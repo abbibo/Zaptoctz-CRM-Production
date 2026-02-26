@@ -23,6 +23,8 @@ import SalesCheck from "./components/Member/SalesCheck";
 import AddLead from "./components/Member/AddLead";
 import ProtectedRoute from "./components/Shared/ProtectedRoute";
 import Navbar from "./components/Shared/Navbar"; // Shared Navbar 
+import Documentation from "./components/Shared/Documentation";
+import DocumentationForm from "./components/Shared/DocumentationForm";
 
 function App() {
   return (
@@ -143,6 +145,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/manager-dashboard/documentation"
+          element={
+            <ProtectedRoute role="manager">
+              <Documentation />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Member Routes */}
         <Route
@@ -185,6 +195,17 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/member-dashboard/documentation"
+          element={
+            <ProtectedRoute role="member">
+              <Documentation />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Public Documentation Form Route */}
+        <Route path="/documentation-form/:docId" element={<DocumentationForm />} />
 
         {/* Catch-All Route */}
         <Route path="*" element={<Login />} />

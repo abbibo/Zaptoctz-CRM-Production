@@ -97,6 +97,12 @@ const Navbar = () => {
                                             >
                                                 Assign Leads
                                             </Link>
+                                            <Link
+                                                to="/manager-dashboard/documentation"
+                                                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-semibold transition"
+                                            >
+                                                Documentation
+                                            </Link>
                                         </>
                                     )}
 
@@ -113,6 +119,12 @@ const Navbar = () => {
                                                 className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-semibold transition"
                                             >
                                                 Add Leads
+                                            </Link>
+                                            <Link
+                                                to="/member-dashboard/documentation"
+                                                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-semibold transition"
+                                            >
+                                                Documentation
                                             </Link>
                                         </>
                                     )}
@@ -309,6 +321,13 @@ const Navbar = () => {
                                         >
                                             Assign Leads
                                         </Link>
+                                        <Link
+                                            to="/manager-dashboard/documentation"
+                                            onClick={closeMobileMenu}
+                                            className="block text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-semibold transition"
+                                        >
+                                            Documentation
+                                        </Link>
                                     </>
                                 )}
 
@@ -327,6 +346,13 @@ const Navbar = () => {
                                             className="block text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-semibold transition"
                                         >
                                             Add Leads
+                                        </Link>
+                                        <Link
+                                            to="/member-dashboard/documentation"
+                                            onClick={closeMobileMenu}
+                                            className="block text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-semibold transition"
+                                        >
+                                            Documentation
                                         </Link>
                                     </>
                                 )}

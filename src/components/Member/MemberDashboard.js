@@ -10,6 +10,7 @@ import {
   addDoc,
   doc,
   getDoc,
+  setDoc,
 } from "firebase/firestore";
 import {
   format,
@@ -128,7 +129,6 @@ const MemberDashboard = () => {
   const dailyGoal = 25; // Fixed daily goal (non-editable)
   const [showConfetti, setShowConfetti] = useState(false);
   const [showMoodPopup, setShowMoodPopup] = useState(false);
-  const [mood, setMood] = useState("");
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackText, setFeedbackText] = useState("");
 
@@ -280,6 +280,32 @@ const MemberDashboard = () => {
     setSuccessMessage("");
     setCopySuccess("");
     setNotInterestedReason("");
+  };
+
+  const handleDocumentation = async (e, lead) => {
+    e.stopPropagation();
+    if (window.confirm("Do you want to start the documentation process?")) {
+      try {
+        const docRef = doc(db, "documentation", lead.id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+           alert("Documentation already started for this lead.");
+           return;
+        }
+        await setDoc(docRef, {
+           docId: lead.id,
+           originalLeadId: lead.id,
+           leadName: lead.leadName || "",
+           phone: lead.phone || "",
+           assignedTo: lead.assignedTo || "",
+           dateAdded: new Date().toISOString()
+        });
+        alert("Lead copied to Documentation successfully!");
+      } catch (err) {
+        console.error("Error creating documentation: ", err);
+        alert("Failed to start documentation process.");
+      }
+    }
   };
 
   // WhatsApp Modal handling
@@ -535,10 +561,10 @@ const MemberDashboard = () => {
     if (callsMadeCount >= 2 && !moodFlag) {
       setShowMoodPopup(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [callsMadeCount, today]);
 
   const handleMoodSelection = (selectedMood) => {
-    setMood(selectedMood);
     localStorage.setItem(`moodShown_${today}`, "true");
     setShowMoodPopup(false);
     logEvent("MoodSelected", { mood: selectedMood });
@@ -553,7 +579,8 @@ const MemberDashboard = () => {
       logEvent("GoalCompleted", { callsMadeCount, dailyGoal });
       setTimeout(() => setShowConfetti(false), 5000);
     }
-  }, [goalAchieved, callsMadeCount, today]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [goalAchieved, callsMadeCount, today, dailyGoal]);
 
   // Show feedback modal after goal is reached, with a Skip option
   useEffect(() => {
@@ -561,6 +588,7 @@ const MemberDashboard = () => {
     if (goalAchieved && !feedbackFlag) {
       setTimeout(() => setShowFeedbackModal(true), 6000);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [goalAchieved, today]);
 
   // Require nonempty feedback text on submission
@@ -783,6 +811,14 @@ const MemberDashboard = () => {
                 >
                   {badgeContent}
                 </span>
+                <div className="mt-3 text-right">
+                  <button
+                    onClick={(e) => handleDocumentation(e, lead)}
+                    className="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-3 rounded shadow transition"
+                  >
+                    Documentation
+                  </button>
+                </div>
               </div>
             );
           })
