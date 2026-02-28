@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../../context/FirebaseContext";
+import { db, useFirebase } from "../../context/FirebaseContext";
 import {
   collection,
   query,
@@ -53,6 +53,7 @@ const MemberCard = ({ member, onClick }) => {
 };
 
 const Members = () => {
+  const { user } = useFirebase();
   const [members, setMembers] = useState([]);
   const [membersMap, setMembersMap] = useState({});
   const [leads, setLeads] = useState([]);
@@ -78,7 +79,8 @@ const Members = () => {
 
   useEffect(() => {
     const fetchMembers = async () => {
-      const managerId = localStorage.getItem("uid");
+      const managerId = user?.uid;
+      if (!managerId) return;
       try {
         // 1. Fetch the Manager's document to get authentic data about assigned members
         const managerDocRef = doc(db, "members", managerId);
@@ -86,20 +88,16 @@ const Members = () => {
         
         const managerData = managerDocSnap.exists() ? managerDocSnap.data() : null;
 
-        // 2. Fetch active members
-        const membersQuery = query(
-          collection(db, "members"),
-          where("status", "==", "active")
-        );
-        const querySnapshot = await getDocs(membersQuery);
-        const allActiveMembers = querySnapshot.docs.map((doc) => ({
+        // 2. Fetch all members
+        const querySnapshot = await getDocs(collection(db, "members"));
+        const allMembers = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
 
         // 3. Determine which members are assigned to this manager
         const assignedIds = managerData?.assignedMembers || [];
-        const assignedMembers = allActiveMembers.filter((member) =>
+        const assignedMembers = allMembers.filter((member) =>
           assignedIds.includes(member.id) || member.assignedManager === managerId
         );
 
@@ -117,8 +115,10 @@ const Members = () => {
       }
     };
 
-    fetchMembers();
-  }, []);
+    if (user?.uid) {
+      fetchMembers();
+    }
+  }, [user]);
 
   const fetchLeads = async (memberId) => {
     try {
@@ -229,7 +229,7 @@ const Members = () => {
     }
 
     try {
-      const managerName = localStorage.getItem("name") || "Manager";
+      const managerName = user?.displayName || "Manager";
 
       const updatedLeads = leads.map((lead) => {
         if (selectedLeads.includes(lead.id)) {
@@ -294,7 +294,7 @@ const Members = () => {
 
     try {
       const leadRef = doc(db, "leads", selectedLead.id);
-      const managerName = localStorage.getItem("name") || "Manager";
+      const managerName = user?.displayName || "Manager";
 
       await updateDoc(leadRef, {
         assignedTo: reassignTo,
@@ -345,7 +345,7 @@ const Members = () => {
     }
 
     try {
-      const managerName = localStorage.getItem("name") || "Manager";
+      const managerName = user?.displayName || "Manager";
 
       const updatedLeads = leads.map((lead) => {
         if (selectedLeads.includes(lead.id)) {

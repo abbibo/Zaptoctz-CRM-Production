@@ -37,10 +37,9 @@ const AdminMembersDashboard = () => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        // **1. Modify the query to fetch only active members**
+        // **1. Modify the query to fetch all members**
         const membersQuery = query(
-          collection(db, "members"),
-          where("status", "==", "active") // Assuming 'status' field indicates active members
+          collection(db, "members")
         );
         const snapshot = await getDocs(membersQuery);
         const membersData = snapshot.docs.map((doc) => ({

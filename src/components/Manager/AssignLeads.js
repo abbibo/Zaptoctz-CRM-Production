@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import ProcessingModal from "../Shared/ProcessingModal";
-import { db } from "../../context/FirebaseContext";
+import { db, useFirebase } from "../../context/FirebaseContext";
 import { collection, getDocs, addDoc, getDoc, doc, query, where } from "firebase/firestore";
 import { parseImportData, parsePasteData, cleanPhoneNumber } from "../../utils/fileImport";
 
 const AssignLeads = () => {
+  const { user } = useFirebase();
   const [leadName, setLeadName] = useState("");
   const [phone, setPhone] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
@@ -27,8 +28,9 @@ const AssignLeads = () => {
 
   useEffect(() => {
     const fetchAssignedMembers = async () => {
+      const managerId = user?.uid;
+      if (!managerId) return;
       try {
-        const managerId = localStorage.getItem("uid"); 
         const querySnapshot = await getDocs(collection(db, "members"));
 
         const managerData = querySnapshot.docs
@@ -47,8 +49,10 @@ const AssignLeads = () => {
       }
     };
 
-    fetchAssignedMembers();
-  }, []);
+    if (user?.uid) {
+      fetchAssignedMembers();
+    }
+  }, [user]);
 
   useEffect(() => {
     // Auto select current date by default
@@ -112,7 +116,7 @@ const AssignLeads = () => {
 
       const newNotes = [
         {
-          text: `Lead assigned by ${localStorage.getItem("managerName") || "Manager"}`,
+          text: `Lead assigned by ${user?.displayName || "Manager"}`,
           status: "Assigned",
           date: new Date().toISOString(),
         },
@@ -273,7 +277,7 @@ const AssignLeads = () => {
           status: "Pending",
           notes: [
             {
-              text: `Lead assigned by ${localStorage.getItem("managerName") || "Manager"}`,
+              text: `Lead assigned by ${user?.displayName || "Manager"}`,
               status: "Assigned",
               date: new Date().toISOString(),
             },
