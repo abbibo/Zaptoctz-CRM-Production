@@ -29,10 +29,8 @@ service cloud.firestore {
       
       // Allow users to read their own profile.
       // Allow Admins and Managers to read all profiles.
-      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin() || isManager());
       
-      // Allow users to update their own profile, but NOT the 'role' field.
-      // Allow Admins to update everything including roles.
       // Allow users to update their own profile, but NOT the 'role' field.
       // Allow Admins to update everything including roles.
       allow update: if (isSignedIn() && request.auth.uid == userId && 
@@ -40,12 +38,13 @@ service cloud.firestore {
                     || isAdmin();
       
       // Allow Admins to create/delete users
-      allow create, delete: if isAdmin();
+      allow delete: if isAdmin();
       
       // Allow users to create their own profile during registration (if applicable)
       // but they cannot set the 'role' to admin/manager directly.
-      allow create: if isSignedIn() && request.auth.uid == userId &&
-                     (!request.resource.data.keys().hasAny(['role']) || request.resource.data.role == 'member');
+      // Admins are permitted to create users with any fields.
+      allow create: if isAdmin() || (isSignedIn() && request.auth.uid == userId &&
+                      (!request.resource.data.keys().hasAny(['role']) || request.resource.data.role == 'member'));
 
 
     }
@@ -56,8 +55,10 @@ service cloud.firestore {
       allow read: if isAdmin() || isManager() || 
                   (isMember() && resource.data.assignedTo == request.auth.uid);
                   
-      // Admins and Managers can create leads.
-      allow create: if isAdmin() || isManager();
+      // Admins, Managers, and Members can create leads.
+      // Members can only create leads assigned to themselves.
+      allow create: if isAdmin() || isManager() || 
+                    (isMember() && request.resource.data.assignedTo == request.auth.uid);
       
       // Admins and Managers can update any lead.
       // Members can update leads assigned to them.

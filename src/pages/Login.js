@@ -80,6 +80,20 @@ const Login = () => {
     setLoading(true);
 
     try {
+      // Execute reCAPTCHA Action
+      if (window.grecaptcha && window.grecaptcha.enterprise) {
+        await new Promise((resolve) => {
+          window.grecaptcha.enterprise.ready(async () => {
+            try {
+              const token = await window.grecaptcha.enterprise.execute('6LeXWXgsAAAAANqrcCmroDkE-Bfbt5HSOQZl3Ixa', {action: 'LOGIN'});
+            } catch (err) {
+              console.error("reCAPTCHA Error:", err);
+            }
+            resolve();
+          });
+        });
+      }
+
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 

@@ -96,14 +96,21 @@ exports.createMember = functions.https.onCall(async (data, context) => {
   const callerToken = await admin.auth().getUser(callerUid);
   const callerRole = callerToken.customClaims ? callerToken.customClaims.role : null;
 
-  if (callerRole !== 'admin') {
+  if (callerRole !== 'admin' && callerRole !== 'manager') {
     throw new functions.https.HttpsError(
         "permission-denied",
-        "Only admins can create new members."
+        "Only admins and managers can create new members."
     );
   }
 
   const { email, password, name, phone, role, referralLink, status } = data;
+
+  if (callerRole === 'manager' && role !== 'member') {
+    throw new functions.https.HttpsError(
+        "permission-denied",
+        "Managers can only create agents."
+    );
+  }
 
   // Validate required fields
   if (!email || !password || !name) {
@@ -149,6 +156,14 @@ exports.createMember = functions.https.onCall(async (data, context) => {
     };
 
     await admin.firestore().collection("members").doc(uid).set(newMember, { merge: true });
+
+    // 4. If created by a manager, auto-assign the member to the manager
+    if (callerRole === 'manager') {
+      const managerRef = admin.firestore().collection("members").doc(callerUid);
+      await managerRef.update({
+        assignedMembers: admin.firestore.FieldValue.arrayUnion(uid)
+      });
+    }
 
     return { success: true, message: `Member ${email} created successfully.` };
 

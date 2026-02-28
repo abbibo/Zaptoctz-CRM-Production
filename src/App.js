@@ -16,6 +16,7 @@ import ManagerDashboard from "./components/Manager/ManagerDashboard";
 import Members from "./components/Manager/Members"; // Manager Members Page
 import AssignLeadsManager from "./components/Manager/AssignLeads"; // Manager Assign Leads Page
 import UserPerformanceDashboard from "./components/Manager/UserPerformanceDashboard"; // Manager Assign Leads Page
+import AddMemberManager from "./components/Manager/AddMember"; // Manager Add Agent Page
 import MemberDashboard from "./components/Member/MemberDashboard";
 import Onboarding from "./components/Member/Onboarding";
 import AllLeadsForMember from "./components/Member/AllLeads";
@@ -142,6 +143,14 @@ function App() {
           element={
             <ProtectedRoute role="manager">
               <AssignLeadsManager />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/manager/add-member"
+          element={
+            <ProtectedRoute role="manager">
+              <AddMemberManager />
             </ProtectedRoute>
           }
         />

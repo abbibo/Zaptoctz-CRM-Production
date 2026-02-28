@@ -83,13 +83,19 @@ const Navbar = () => {
                                                 to="/manager-new"
                                                 className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-semibold transition"
                                             >
-                                                New Dashboard
+                                                Performance Dashboard
                                             </Link>
                                             <Link
                                                 to="/manager/members"
                                                 className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-semibold transition"
                                             >
                                                 Agents
+                                            </Link>
+                                            <Link
+                                                to="/manager/add-member"
+                                                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-semibold transition"
+                                            >
+                                                Add Agent
                                             </Link>
                                             <Link
                                                 to="/manager/assign-leads"
@@ -305,7 +311,7 @@ const Navbar = () => {
                                             to="/manager-new"
                                             className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-semibold transition"
                                         >
-                                            New Dashboard
+                                            Performance Dashboard
                                         </Link>
                                         <Link
                                             to="/manager/members"
@@ -313,6 +319,13 @@ const Navbar = () => {
                                             className="block text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-semibold transition"
                                         >
                                             Agents
+                                        </Link>
+                                        <Link
+                                            to="/manager/add-member"
+                                            onClick={closeMobileMenu}
+                                            className="block text-gray-300 hover:text-white px-3 py-2 rounded-md text-base font-semibold transition"
+                                        >
+                                            Add Agent
                                         </Link>
                                         <Link
                                             to="/manager/assign-leads"

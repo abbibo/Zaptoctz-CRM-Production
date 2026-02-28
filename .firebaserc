@@ -1,5 +1,7 @@
 {
   "projects": {
     "default": "zaptockz-crm-app"
-  }
+  },
+  "targets": {},
+  "etags": {}
 }

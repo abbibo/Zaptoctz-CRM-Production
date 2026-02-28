@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
 import { getAuth } from "firebase/auth";
 import { initializeFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
@@ -16,6 +17,15 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
+// Initialize Firebase App Check with reCAPTCHA Enterprise
+if (process.env.NODE_ENV === "development") {
+  window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+}
+export const appCheck = initializeAppCheck(app, {
+  provider: new ReCaptchaEnterpriseProvider('6LeXWXgsAAAAANqrcCmroDkE-Bfbt5HSOQZl3Ixa'),
+  isTokenAutoRefreshEnabled: true
+});
 export const auth = getAuth(app);
 const db = initializeFirestore(app, {
     experimentalForceLongPolling: true,
