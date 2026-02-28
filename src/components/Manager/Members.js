@@ -7,6 +7,7 @@ import {
   getDocs,
   updateDoc,
   doc,
+  getDoc,
 } from "firebase/firestore";
 
 // New Component: Displays each member with their pending leads count
@@ -79,7 +80,13 @@ const Members = () => {
     const fetchMembers = async () => {
       const managerId = localStorage.getItem("uid");
       try {
-        // Fetch only active members
+        // 1. Fetch the Manager's document to get authentic data about assigned members
+        const managerDocRef = doc(db, "members", managerId);
+        const managerDocSnap = await getDoc(managerDocRef);
+        
+        const managerData = managerDocSnap.exists() ? managerDocSnap.data() : null;
+
+        // 2. Fetch active members
         const membersQuery = query(
           collection(db, "members"),
           where("status", "==", "active")
@@ -90,26 +97,20 @@ const Members = () => {
           ...doc.data(),
         }));
 
-        // Filter members assigned to the current manager
-        const managerData = allActiveMembers.find(
-          (member) => member.id === managerId
+        // 3. Determine which members are assigned to this manager
+        const assignedIds = managerData?.assignedMembers || [];
+        const assignedMembers = allActiveMembers.filter((member) =>
+          assignedIds.includes(member.id) || member.assignedManager === managerId
         );
 
-        if (managerData?.assignedMembers) {
-          const assignedMembers = allActiveMembers.filter((member) =>
-            managerData.assignedMembers.includes(member.id)
-          );
-          setMembers(assignedMembers);
+        setMembers(assignedMembers);
 
-          const map = {};
-          assignedMembers.forEach((member) => {
-            map[member.id] = member.name;
-          });
-          setMembersMap(map);
-        } else {
-          setMembers([]);
-          setMembersMap({});
-        }
+        const map = {};
+        assignedMembers.forEach((member) => {
+          map[member.id] = member.name;
+        });
+        setMembersMap(map);
+        
       } catch (err) {
         console.error("Error fetching members:", err);
         setErrorMessage("Failed to fetch members.");
