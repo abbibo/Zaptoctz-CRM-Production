@@ -33,7 +33,7 @@ const Login = () => {
           const docRef = doc(db, "members", user.uid);
           const docSnap = await getDoc(docRef);
 
-          if (docSnap.exists()) {
+            if (docSnap.exists()) {
             const userData = docSnap.data();
             // If user is inactive, sign them out and show error
             if (userData.status === "inactive") {
@@ -44,8 +44,12 @@ const Login = () => {
               return;
             }
 
-            // Redirect based on role
             const role = userData.role;
+            localStorage.setItem("uid", user.uid);
+            localStorage.setItem("role", role);
+            localStorage.setItem("name", userData.name || userData.displayName || user.displayName || "User");
+
+            // Redirect based on role
             if (role === "admin") {
               navigate("/admin-dashboard");
             } else if (role === "manager") {
@@ -111,7 +115,11 @@ const Login = () => {
         }
 
         const role = userData.role;
-
+        
+        // Save user info to localStorage for components that rely on it
+        localStorage.setItem("uid", user.uid);
+        localStorage.setItem("role", role);
+        localStorage.setItem("name", userData.name || userData.displayName || user.displayName || "User");
 
         if (role === "admin") {
           navigate("/admin-dashboard");
