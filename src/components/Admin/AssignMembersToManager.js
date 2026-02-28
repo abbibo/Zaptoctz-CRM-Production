@@ -69,6 +69,41 @@ const AssignMembersToManager = () => {
       await updateDoc(managerRef, {
         assignedMembers,
       });
+
+      // Update the assignedManager field for all members bidirectionally
+      const updatePromises = members.map((member) => {
+        const isAssigned = assignedMembers.includes(member.id);
+        const memberRef = doc(db, "members", member.id);
+        
+        // If they are assigned to this manager, ensure assignedManager is set.
+        if (isAssigned) {
+          if (member.assignedManager !== selectedManager) {
+            return updateDoc(memberRef, { assignedManager: selectedManager });
+          }
+        } else {
+          // If they are NOT assigned to this manager, but their assignedManager IS this manager, clear it.
+          if (member.assignedManager === selectedManager) {
+            return updateDoc(memberRef, { assignedManager: "" });
+          }
+        }
+        return Promise.resolve();
+      });
+
+      await Promise.all(updatePromises);
+
+      // Update local members state so it reflects the new assignedManager values
+      setMembers((prevMembers) => 
+        prevMembers.map((member) => {
+          const isAssigned = assignedMembers.includes(member.id);
+          if (isAssigned) {
+            return { ...member, assignedManager: selectedManager };
+          } else if (member.assignedManager === selectedManager) {
+            return { ...member, assignedManager: "" };
+          }
+          return member;
+        })
+      );
+
       setSuccess(true);
     } catch (err) {
       console.error("Error assigning members:", err);

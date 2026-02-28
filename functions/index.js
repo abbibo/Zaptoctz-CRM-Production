@@ -103,7 +103,7 @@ exports.createMember = functions.https.onCall(async (data, context) => {
     );
   }
 
-  const { email, password, name, phone, role, referralLink, status } = data;
+  const { email, password, name, phone, role, referralLink, status, assignedManager } = data;
 
   if (callerRole === 'manager' && role !== 'member') {
     throw new functions.https.HttpsError(
@@ -155,11 +155,22 @@ exports.createMember = functions.https.onCall(async (data, context) => {
       createdBy: callerUid
     };
 
+    // If an assignedManager is provided (e.g. from Admin side) and the user is an agent, set it
+    if (role === 'member' && assignedManager) {
+      newMember.assignedManager = assignedManager;
+    }
+
+    // If created by a manager, auto-assign the member to the manager
+    if (callerRole === 'manager') {
+      newMember.assignedManager = callerUid;
+    }
+
     await admin.firestore().collection("members").doc(uid).set(newMember, { merge: true });
 
-    // 4. If created by a manager, auto-assign the member to the manager
-    if (callerRole === 'manager') {
-      const managerRef = admin.firestore().collection("members").doc(callerUid);
+    // 4. Update the manager's assignedMembers array if applicable
+    if (newMember.assignedManager) {
+      const targetManagerId = newMember.assignedManager;
+      const managerRef = admin.firestore().collection("members").doc(targetManagerId);
       await managerRef.update({
         assignedMembers: admin.firestore.FieldValue.arrayUnion(uid)
       });

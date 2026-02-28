@@ -11,6 +11,7 @@ const AddMember = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("active");
+  const [assignedManager, setAssignedManager] = useState("");
   const [members, setMembers] = useState([]);
   
   const [editMode, setEditMode] = useState(false);
@@ -43,6 +44,7 @@ const AddMember = () => {
     setStatus("active");
     setEditMode(false);
     setEditMemberId(null);
+    setAssignedManager("");
     setError("");
     if (!keepSuccess) {
       setSuccess(false);
@@ -69,7 +71,8 @@ const AddMember = () => {
         phone,
         role,
         referralLink,
-        status
+        status,
+        ...(role === 'member' && assignedManager ? { assignedManager } : {})
       });
 
       console.log(result.data.message);
@@ -96,6 +99,7 @@ const AddMember = () => {
     setReferralLink(member.referralLink);
     setEmail(member.email);
     setStatus(member.status || "active");
+    setAssignedManager(member.assignedManager || "");
     setSuccess(false);
     setError("");
   };
@@ -120,6 +124,7 @@ const AddMember = () => {
         referralLink,
         email,
         status,
+        ...(role === 'member' ? { assignedManager: assignedManager || "" } : {})
       });
       setSuccess(true);
       resetForm(true); // Keep success message
@@ -164,6 +169,18 @@ const AddMember = () => {
               <option value="manager">Manager</option>
               <option value="admin">Admin</option>
             </select>
+            {role === 'member' && (
+              <select
+                value={assignedManager}
+                onChange={(e) => setAssignedManager(e.target.value)}
+                className="w-full p-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-200"
+              >
+                <option value="">-- Select Assigned Manager (Optional) --</option>
+                {members.filter(m => m.role === 'manager').map(manager => (
+                  <option key={manager.id} value={manager.id}>{manager.name} ({manager.email})</option>
+                ))}
+              </select>
+            )}
             <input
               type="text"
               placeholder="Referral Link"
@@ -284,6 +301,18 @@ const AddMember = () => {
                 <option value="manager">Manager</option>
                 <option value="admin">Admin</option>
               </select>
+              {role === 'member' && (
+                <select
+                  value={assignedManager}
+                  onChange={(e) => setAssignedManager(e.target.value)}
+                  className="w-full p-3 bg-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-200"
+                >
+                  <option value="">-- Select Assigned Manager (Optional) --</option>
+                  {members.filter(m => m.role === 'manager').map(manager => (
+                    <option key={manager.id} value={manager.id}>{manager.name} ({manager.email})</option>
+                  ))}
+                </select>
+              )}
               <input
                 type="text"
                 placeholder="Referral Link"
